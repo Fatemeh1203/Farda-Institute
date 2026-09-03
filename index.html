@@ -41,7 +41,8 @@ a:hover{color:var(--link-hover)}
 .locale{font-size:13px; font-weight:600; color:var(--ink-faint); letter-spacing:.06em}
 .langbtn{font:inherit; font-size:13px; font-weight:700; padding:8px 16px; border:0; border-radius:999px; cursor:pointer; color:var(--link); background:rgba(255,255,255,.65); box-shadow:0 8px 20px -10px rgba(90,130,200,.6), inset 0 1px 0 rgba(255,255,255,.9); backdrop-filter:blur(6px)}
 .header{text-align:center; margin-bottom:clamp(36px,7vw,66px)}
-.emblem{width:clamp(120px,20vw,150px); height:clamp(120px,20vw,150px); margin:0 auto 20px; display:block; filter:drop-shadow(0 26px 34px rgba(80,120,195,.4))}
+.emblem{width:clamp(120px,20vw,152px); height:clamp(120px,20vw,152px); margin:0 auto 20px; border-radius:50%; display:grid; place-items:center; background:radial-gradient(70% 70% at 50% 35%,#fff 0%,#f0f6ff 100%); box-shadow:0 40px 60px -26px rgba(80,120,195,.55), inset 0 -10px 22px rgba(150,185,240,.28), inset 0 10px 24px rgba(255,255,255,.95)}
+.emblem img{width:100%; height:100%; object-fit:cover; border-radius:50%}
 .header h1{margin:0 0 8px; font-size:clamp(28px,6vw,46px); font-weight:800; letter-spacing:-.01em; color:var(--ink-strong)}
 .tagline{margin:0 0 18px; font-size:clamp(15px,3vw,18px); font-weight:600; color:var(--ink-muted)}
 .manager-badge{display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:600; padding:8px 18px; border-radius:999px; background:rgba(255,255,255,.7); box-shadow:0 12px 26px -14px rgba(90,130,200,.6), inset 0 1px 0 rgba(255,255,255,.9)}
@@ -88,14 +89,7 @@ html[dir="rtl"] .card-open svg{transform:scaleX(-1)}
       <button class="langbtn" id="lang" type="button">English</button>
     </div>
     <header class="header">
-      <svg class="emblem" viewBox="0 0 200 200" role="img" aria-label="آموزشگاه فردا">
-        <defs><linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6FA8FF"/><stop offset="1" stop-color="#8F7BE0"/></linearGradient></defs>
-        <circle cx="100" cy="98" r="82" fill="#fff" opacity=".55"/>
-        <circle cx="100" cy="98" r="82" fill="none" stroke="url(#ring)" stroke-width="3" stroke-linecap="round" stroke-dasharray="352 40" transform="rotate(-42 100 98)"/>
-        <circle cx="150" cy="46" r="4.6" fill="#6F57CF"/>
-        <text x="100" y="122" text-anchor="middle" font-family="'Vazirmatn',serif" font-weight="800" font-size="70" fill="#1f335a">فردا</text>
-        <line x1="46" y1="152" x2="154" y2="152" stroke="#cfe0ff" stroke-width="2"/>
-      </svg>
+      <div class="emblem"><img src="assets/farda-logo.png" alt="آموزشگاه علمی فردا"></div>
       <h1 data-i="school">آموزشگاه علمی فردا</h1>
       <p class="tagline" data-i="tagline">از امروز به فردا بیایید</p>
       <div class="manager-badge"><span class="role" data-i="role">مدیر آموزشگاه</span><span class="name" data-i="mgr">فاطمه شمس</span></div>
