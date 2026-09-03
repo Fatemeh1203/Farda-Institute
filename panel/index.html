@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>پنل مدیر — آموزشگاه علمی فردا</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1019; --card:#171A2B; --card2:#1F2337; --ink:#E8EAF3; --ink2:#9AA0B8; --ink3:#6E7490;
+  --line:#282D44; --line2:#1E2235; --accent:#93A0E8; --accentSoft:#1B2143; --brass:#DCA954;
+  --ok:#5BC28D; --stop:#E08074;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Vazirmatn',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;direction:rtl;line-height:1.85}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:#b7c0f2}
+.top{background:linear-gradient(180deg,#151830,#10121e);border-bottom:1px solid var(--line);padding:34px 0 26px}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.top h1{margin:6px 0 6px;font-size:clamp(22px,4.6vw,30px);font-weight:800}
+.lede{color:var(--ink2);font-size:14px;margin:0;max-width:60ch}
+.hint-bar{margin-top:14px;display:inline-block;font-size:12px;color:var(--ink3);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 13px}
+section{margin:26px 0}
+.shead{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+.shead h2{margin:0;font-size:18px;font-weight:800}
+.freq{font-size:11.5px;font-weight:700;color:var(--brass);background:#2a2210;border:1px solid #4a3c18;border-radius:999px;padding:3px 11px;white-space:nowrap}
+.srule{flex:1;height:1px;background:var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.tile{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.tile:hover{border-color:var(--accent)}
+.tile .t{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:5px}
+.tile .d{font-size:13px;color:var(--ink2);line-height:1.75;margin-bottom:10px}
+.rows{display:flex;flex-direction:column;gap:12px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.row .t{font-size:15.5px;font-weight:800;margin-bottom:4px}
+.row .d{font-size:13px;color:var(--ink2);line-height:1.75;margin-bottom:9px}
+.u{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;direction:ltr;unicode-bidi:embed;color:var(--accent);background:var(--card2);border:1px solid var(--line2);border-radius:7px;padding:3px 9px;word-break:break-all}
+.copy{font:inherit;font-size:12px;font-weight:700;color:var(--accent);background:var(--accentSoft);border:1px solid var(--line);border-radius:7px;padding:4px 12px;cursor:pointer}
+.copy[data-done="1"]{color:var(--ok)}
+pre{background:#0b0d16;border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto;margin:12px 0 0}
+code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:#cfe0ff;white-space:pre;direction:ltr;display:block}
+.note{background:#2a2210;border:1px solid #4a3c18;border-radius:12px;padding:12px 16px;font-size:13px;color:#f0e2bf;margin-top:12px}
+.gate{max-width:440px;margin:40px auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 26px;text-align:center}
+.gate .lock{font-size:34px}
+.gate h2{margin:8px 0 6px;font-size:20px}
+.gate p{color:var(--ink2);font-size:13.5px;margin:0 0 4px}
+.gate .field{display:flex;gap:10px;margin-top:18px}
+.gate input{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:10px;color:var(--ink);font:inherit;font-size:15px;padding:11px 13px;text-align:center}
+.gate .btn{background:var(--accent);color:#10131f;border:0;border-radius:10px;font:inherit;font-size:15px;font-weight:800;padding:11px 20px;cursor:pointer}
+.gate .btn:disabled{opacity:.5}
+.msg{margin-top:12px;font-size:13.5px;min-height:20px}
+.msg.bad{color:var(--stop)}.msg.good{color:var(--ok)}
+footer{text-align:center;color:var(--ink3);font-size:12px;padding:30px 0 40px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+var VAULT = {"v":1,"salt":"kUytsqHl1m48K8hVU/zsZQ==","iv":"Jf7b56HyTEeNQ2dM","ct":"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","hint":"1358"};
+
+var enc=new TextEncoder(), dec=new TextDecoder();
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function unb64(str){var s=atob(str),b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
+function keyFrom(pw,salt){return crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']).then(function(km){return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:200000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);});}
+function open(pw,v){return keyFrom(pw,unb64(v.salt)).then(function(k){return crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(v.iv)},k,unb64(v.ct));}).then(function(p){return JSON.parse(dec.decode(p));});}
+
+var root=document.getElementById('app');
+function mast(){
+  return '<div class="top"><div class="wrap">'
+    +'<div class="eyebrow">پنل عملیات — خصوصی</div>'
+    +'<h1>آموزشگاه علمی فردا</h1>'
+    +'<p class="lede">هر کاری که در حسابداری آموزشگاه انجام می‌دهید از یکی از این لینک‌ها شروع می‌شود. این صفحه با رمز شما محافظت می‌شود؛ بدون رمز چیزی دیده نمی‌شود.</p>'
+    +'<div class="hint-bar">این صفحه را روی گوشی بوکمارک کنید — فقط با رمز شما باز می‌شود</div>'
+    +'</div></div>';
+}
+function sectionHtml(s){
+  var h='<section><div class="shead"><h2>'+esc(s.h)+'</h2>'+(s.freq?'<span class="freq">'+esc(s.freq)+'</span>':'')+'<span class="srule"></span></div>';
+  if(s.tiles&&s.tiles.length){h+='<div class="tiles">';for(var i=0;i<s.tiles.length;i++){var t=s.tiles[i];h+='<a class="tile" href="'+esc(t.u)+'" target="_blank" rel="noopener"><div class="t">'+esc(t.t)+'</div><div class="d">'+esc(t.d)+'</div><div class="mono">'+esc(t.u.replace(/^https:\/\/[^/]+/,''))+'</div></a>';}h+='</div>';}
+  if(s.items&&s.items.length){h+='<div class="rows">';for(var j=0;j<s.items.length;j++){var it=s.items[j];h+='<div class="row"><div class="t">'+esc(it.t)+'</div><div class="d">'+esc(it.d)+'</div><div class="u"><a class="mono" href="'+esc(it.u)+'" target="_blank" rel="noopener">'+esc(it.u)+'</a><button class="copy" data-copy="'+esc(it.u)+'">کپی</button></div></div>';}h+='</div>';}
+  if(s.code)h+='<pre><code>'+esc(s.code)+'</code></pre>';
+  if(s.note)h+='<div class="note">'+s.note+'</div>';
+  return h+'</section>';
+}
+function renderGate(err){
+  root.innerHTML=mast()+'<div class="wrap"><div class="gate"><div class="lock">🔒</div><h2>قفل است</h2>'
+    +'<p>لینک‌های مدیریتی با رمز شما رمزگذاری شده‌اند و بدون رمز اصلاً قابل بازیابی نیستند.</p>'
+    +(VAULT.hint?'<p>یادآور رمز: <b>'+esc(VAULT.hint)+'</b></p>':'')
+    +'<div class="field"><input id="pw" type="password" placeholder="رمز ورود" autocomplete="current-password"><button class="btn" id="go">باز کن</button></div>'
+    +'<div class="msg'+(err?' bad':'')+'" id="gmsg">'+(err||'')+'</div></div></div>';
+  var pw=document.getElementById('pw'), go=document.getElementById('go'), gmsg=document.getElementById('gmsg');
+  function submit(){
+    var v=pw.value; if(!v)return;
+    gmsg.className='msg'; gmsg.textContent='در حال باز کردن…'; go.disabled=true;
+    open(v,VAULT).then(function(data){ renderSections(data); },function(){ go.disabled=false; gmsg.className='msg bad'; gmsg.textContent='رمز درست نیست.'; });
+  }
+  go.addEventListener('click',submit);
+  pw.addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
+  pw.focus();
+}
+function renderSections(data){
+  var body=''; var all=(data.open||[]).concat(data.secret||[]);
+  for(var i=0;i<all.length;i++)body+=sectionHtml(all[i]);
+  root.innerHTML=mast()+'<div class="wrap">'+body+'<footer>آموزشگاه علمی فردا — منطقهٔ زمانی تهران، همه مبالغ به تومان · این صفحه قفل است و فقط با رمز شما باز می‌شود</footer></div>';
+  var copies=root.querySelectorAll('.copy');
+  for(var c=0;c<copies.length;c++){copies[c].addEventListener('click',function(e){
+    var b=e.currentTarget, text=b.getAttribute('data-copy');
+    function done(){var old=b.textContent;b.textContent='کپی شد';b.setAttribute('data-done','1');setTimeout(function(){b.textContent=old;b.removeAttribute('data-done');},1500);}
+    try{navigator.clipboard.writeText(text).then(done,done);}catch(err){try{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();}catch(e2){}}
+  });}
+}
+renderGate();
+</script>
+</body>
+</html>
