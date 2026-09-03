@@ -11,9 +11,9 @@ https://fatemeh1203.github.io/n8n-Automation-Workflows/
 
 | کاربرد | آدرس |
 |---|---|
-| ثبت واریزی | `https://arezoo000.app.n8n.cloud/form/daramad-farda` |
-| ثبت هزینه | `https://arezoo000.app.n8n.cloud/form/hazine-farda` |
-| کلاس برگزارشده و برنامهٔ هفتگی شاگرد | `https://arezoo000.app.n8n.cloud/form/sabt-farda` |
+| ثبت واریزی | `https://n8n.aifardainstitute.ir/form/daramad-farda` |
+| ثبت هزینه | `https://n8n.aifardainstitute.ir/form/hazine-farda` |
+| کلاس برگزارشده و برنامهٔ هفتگی شاگرد | `https://n8n.aifardainstitute.ir/form/sabt-farda` |
 
 ## پنل مدیر — خصوصی
 

@@ -54,9 +54,9 @@
 
 | کاربرد | آدرس |
 |---|---|
-| 💰 ثبت واریزی | `https://arezoo000.app.n8n.cloud/form/daramad-farda` |
-| 🧾 ثبت هزینه | `https://arezoo000.app.n8n.cloud/form/hazine-farda` |
-| 🗓 کلاس برگزارشده و برنامهٔ هفتگی فراگیر | `https://arezoo000.app.n8n.cloud/form/sabt-farda` |
+| 💰 ثبت واریزی | `https://n8n.aifardainstitute.ir/form/daramad-farda` |
+| 🧾 ثبت هزینه | `https://n8n.aifardainstitute.ir/form/hazine-farda` |
+| 🗓 کلاس برگزارشده و برنامهٔ هفتگی فراگیر | `https://n8n.aifardainstitute.ir/form/sabt-farda` |
 | 🚪 ورودی مشترک درآمد/هزینه | در پنل خصوصی مدیر |
 | 🏦 آورده سرمایه‌گذار | در پنل خصوصی مدیر |
 | ⚙️ تنظیم تلگرام (یک بار) | در پنل خصوصی مدیر |
@@ -163,7 +163,7 @@
 ### ۱) فرم واریزی
 
 ```
-https://arezoo000.app.n8n.cloud/form/daramad-farda
+https://n8n.aifardainstitute.ir/form/daramad-farda
 ```
 
 | فیلد | اجباری | نکته |
@@ -184,7 +184,7 @@ https://arezoo000.app.n8n.cloud/form/daramad-farda
 ### ۲) فرم هزینه
 
 ```
-https://arezoo000.app.n8n.cloud/form/hazine-farda
+https://n8n.aifardainstitute.ir/form/hazine-farda
 ```
 
 اجباری: **دسته هزینه** (فهرست آماده) · **مبلغ** · **تاریخ پرداخت** · **شرح** · **روش پرداخت** · **ثبت‌کننده**.
