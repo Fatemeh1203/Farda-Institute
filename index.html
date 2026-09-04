@@ -77,7 +77,9 @@ html[dir="rtl"] .card-open svg{transform:scaleX(-1)}
 .tip strong{color:var(--ink-strong)}
 .pagefoot{text-align:center; margin-top:clamp(36px,6vw,56px); font-size:13.5px; color:var(--ink-faint-2)}
 .pagefoot p{margin:0 0 6px; font-weight:700; color:var(--ink-soft)}
-.pagefoot p:last-child{margin:0; font-weight:400}
+.pagefoot p:last-child{margin:0 0 14px; font-weight:400}
+.admin-link{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-faint-2); text-decoration:none; border:1px solid var(--line); border-radius:999px; padding:5px 14px; transition:color .15s,border-color .15s}
+.admin-link:hover{color:var(--ink-soft); border-color:var(--ink-faint-2)}
 </style>
 </head>
 <body>
@@ -141,6 +143,7 @@ html[dir="rtl"] .card-open svg{transform:scaleX(-1)}
     <footer class="pagefoot">
       <p data-i="footMgr">مدیر: فاطمه شمس · آموزشگاه علمی فردا</p>
       <p data-i="footNote">همه مبالغ به تومان — منطقهٔ زمانی تهران</p>
+      <a class="admin-link" href="panel/" data-i="adminLink">ورود به پنل مدیریت</a>
     </footer>
   </div>
 </div>
@@ -167,7 +170,8 @@ var I18N = {
     tip3:'<strong>فیلدهای ستاره‌دار اجباری‌اند.</strong> تا پرشان نکنید فرم ارسال نمی‌شود.',
     tip4:'<strong>عکس فیش یا فاکتور را همان لحظه بگیرید.</strong> بعداً پیدا کردنش سخت می‌شود.',
     tip5:"هر ثبتی اول برای مدیر می‌رود و بعد از تأیید در دفتر می‌نشیند.",
-    footMgr:"مدیر: فاطمه شمس · آموزشگاه علمی فردا", footNote:"همه مبالغ به تومان — منطقهٔ زمانی تهران" },
+    footMgr:"مدیر: فاطمه شمس · آموزشگاه علمی فردا", footNote:"همه مبالغ به تومان — منطقهٔ زمانی تهران",
+    adminLink:"ورود به پنل مدیریت" },
   en: { _dir:"ltr", _lang:"en", lang:"فارسی", locale:"TEHRAN · TOMAN",
     school:"Farda Science Academy", tagline:"From today, into tomorrow.", role:"Academy Director", mgr:"Fatemeh Shams",
     intro:"Every deposit, expense, and class at the academy is logged right here. Bookmark this link on your phone.",
@@ -183,7 +187,8 @@ var I18N = {
     tip3:'<strong>Fields marked with a star are required.</strong> The form won\'t submit until they\'re filled in.',
     tip4:'<strong>Photograph the receipt or invoice right away.</strong> It\'s much harder to find it later.',
     tip5:"Every entry goes to the director first, and lands in the ledger once approved.",
-    footMgr:"Director: Fatemeh Shams · Farda Science Academy", footNote:"All amounts in Tomans — Tehran time zone" }
+    footMgr:"Director: Fatemeh Shams · Farda Science Academy", footNote:"All amounts in Tomans — Tehran time zone",
+    adminLink:"Admin panel login" }
 };
 
 function apply(lang){
