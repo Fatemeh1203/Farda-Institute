@@ -1,0 +1,815 @@
+{
+  "id": "40Qh2f0Bm3B2VcqF",
+  "name": "۰۱ |  پروژه حسابداری آموزشگاه : کلاس‌های برگزارشده و برنامهٔ هفتگی",
+  "description": "دو مسیر: ثبت کلاس‌های برگزارشده در شیت «برنامه_کلاس‌ها» و ثبت برنامهٔ کلاسی شاگردان در شیت «برنامه_هفتگی». هیچ‌کدام پول حساب نمی‌کنند.",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "آموزشگاه علمی فردا",
+        "formDescription": "کلاس‌های برگزارشده و برنامهٔ کلاسی فراگیرها را اینجا ثبت کنید",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "چه چیزی می‌خواهید ثبت کنید؟",
+              "fieldType": "radio",
+              "fieldName": "نوع_ثبت",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "کلاس برگزارشده"
+                  },
+                  {
+                    "option": "برنامهٔ کلاسی شاگرد"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "ادامه",
+          "path": "sabt-farda",
+          "ignoreBots": true,
+          "useWorkflowTimezone": true
+        }
+      },
+      "id": "c88c2b01-78b1-4e3e-9cad-676a9283ecd1",
+      "name": "فرم ثبت سریع",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -1120,
+        0
+      ],
+      "webhookId": "18279d64-7b87-4a09-8681-c9ebde99814a",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "0cwVTJ8y21vOBR7T",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1854744989",
+          "cachedResultName": "تنظیمات"
+        },
+        "options": {}
+      },
+      "id": "a25575cb-ee04-45f5-912f-7ee8e77c35f9",
+      "name": "خواندن تنظیمات",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -896,
+        0
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "486168317",
+          "cachedResultName": "مدرسین"
+        },
+        "options": {}
+      },
+      "id": "fb9a743c-52eb-4dde-9bd1-636812546c20",
+      "name": "خواندن مدرسین",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -688,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "337802420",
+          "cachedResultName": "کلاس‌ها"
+        },
+        "options": {}
+      },
+      "id": "285b993a-eead-4d2f-89ab-7f09b1d3b4fb",
+      "name": "خواندن کلاس‌ها",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -464,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function safeRows(nodeName) {\n  try { return $(nodeName).all().map(function (i) { return i.json || {}; }); }\n  catch (e) { return []; }\n}\nfunction opts(arr) { return { values: arr.map(function (o) { return { option: String(o) }; }) }; }\nfunction fa2en(s) { return String(s == null ? '' : s).replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); }); }\nfunction normTime(s) { return fa2en(s).replace(/\\s+/g, '').replace('،', '').trim(); }\n\nconst todayISO = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Tehran' });\n\nconst settingsRows = safeRows('خواندن تنظیمات');\nconst settings = {};\nfor (let i = 0; i < settingsRows.length; i++) {\n  const k = settingsRows[i]['کلید'];\n  if (k) settings[String(k).trim()] = settingsRows[i]['مقدار'];\n}\n\nconst isLive = function (r) {\n  const s = String(r['وضعیت'] || '').trim();\n  return s !== 'غیرفعال' && s !== 'حذف';\n};\n\nconst teachers = safeRows('خواندن مدرسین').filter(function (r) { return r['کد_مدرس'] && isLive(r); });\nconst classes = safeRows('خواندن کلاس‌ها').filter(function (r) { return r['کد_کلاس'] && isLive(r); });\n\nconst classOptions = classes.map(function (c) {\n  return c['کد_کلاس'] + ' — ' + (c['نام_کلاس'] || '') + ' (' + (c['نوع_کلاس'] || '') + ')';\n});\nconst teacherOptions = teachers.map(function (t) {\n  return t['کد_مدرس'] + ' — ' + (t['نام_مدرس'] || '');\n});\n\nfunction classField() {\n  return classOptions.length\n    ? { fieldLabel: 'کلاس', fieldType: 'dropdown', requiredField: true, fieldOptions: opts(classOptions) }\n    : { fieldLabel: 'کلاس (کد یا نام)', fieldType: 'text', requiredField: true, placeholder: 'هنوز کلاسی در شیت «کلاس‌ها» ثبت نشده — کد یا نام را بنویسید' };\n}\nfunction teacherField() {\n  return teacherOptions.length\n    ? { fieldLabel: 'نام مدرس', fieldType: 'dropdown', requiredField: false, fieldOptions: opts(teacherOptions) }\n    : { fieldLabel: 'نام مدرس', fieldType: 'text', requiredField: false, placeholder: 'اگر کلاس در شیت ثبت شده، خالی بگذارید' };\n}\nfunction placeField() {\n  return { fieldLabel: 'مکان برگزاری', fieldType: 'dropdown', requiredField: true, fieldOptions: opts(['کلاس ۱', 'کلاس ۲', 'آنلاین', 'ترکیبی', 'سایر']) };\n}\n\nconst DAYS = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'];\n\nconst formSession = [\n  { fieldLabel: 'تاریخ برگزاری', fieldType: 'date', requiredField: true, defaultValue: todayISO },\n  classField(),\n  placeField(),\n  { fieldLabel: 'ساعت', fieldType: 'text', requiredField: false, placeholder: 'مثلاً 16:00 تا 17:30' },\n  { fieldLabel: 'تعداد جلسه', fieldType: 'number', requiredField: true, defaultValue: '1' },\n  { fieldLabel: 'تعداد فراگیر حاضر', fieldType: 'number', requiredField: false },\n  { fieldLabel: 'وضعیت', fieldType: 'radio', requiredField: true, fieldOptions: opts(['برگزار شد', 'لغو شد', 'جبرانی']), defaultValue: 'برگزار شد' },\n  { fieldLabel: 'توضیح', fieldType: 'textarea', requiredField: false },\n];\n\nconst formWeekly = [\n  { fieldLabel: 'نام فراگیر', fieldType: 'text', requiredField: true },\n  { fieldLabel: 'موبایل فراگیر', fieldType: 'text', requiredField: false, placeholder: '۰۹۱۲۳۴۵۶۷۸۹' },\n  classField(),\n  { fieldLabel: 'نوع کلاس', fieldType: 'radio', requiredField: true, fieldOptions: opts(['حضوری', 'آنلاین', 'ترکیبی']), defaultValue: 'حضوری' },\n  { fieldLabel: 'قالب کلاس', fieldType: 'radio', requiredField: true, fieldOptions: opts(['خصوصی', 'نیمه‌خصوصی', 'گروهی', 'کارگاه']), defaultValue: 'گروهی' },\n  placeField(),\n  teacherField(),\n  { fieldLabel: 'تعداد روز در هفته', fieldType: 'dropdown', requiredField: true, fieldOptions: opts(['۱', '۲', '۳', '۴', '۵', '۶', '۷']), defaultValue: '۱' },\n  { fieldLabel: 'تاریخ شروع', fieldType: 'date', requiredField: true, defaultValue: todayISO },\n  { fieldLabel: 'وضعیت', fieldType: 'radio', requiredField: true, fieldOptions: opts(['فعال', 'متوقف', 'تمام شده', 'جبرانی']), defaultValue: 'فعال' },\n  { fieldLabel: 'توضیح', fieldType: 'textarea', requiredField: false },\n];\n\n// --- پیش‌نمایش کلاس‌های ثبت‌شده (برای پرهیز از ثبت تکراری) ---\nconst weeklyRows = safeRows('خواندن برنامه هفتگی').filter(function (r) {\n  return isLive(r) && (r['نام_فراگیر'] || r['کد_کلاس']);\n});\nconst slotMap = {};\nconst slotOrder = [];\nfor (let i = 0; i < weeklyRows.length; i++) {\n  const r = weeklyRows[i];\n  const key = [String(r['کد_کلاس'] || '').trim(), String(r['روز_هفته'] || '').trim(), normTime(r['ساعت_شروع']), String(r['مکان'] || '').trim()].join('|');\n  if (!slotMap[key]) {\n    slotMap[key] = {\n      cls: String(r['نام_کلاس'] || r['کد_کلاس'] || '').trim(),\n      day: String(r['روز_هفته'] || '').trim(),\n      time: String(r['ساعت_شروع'] || '').trim(),\n      place: String(r['مکان'] || '').trim(),\n      group: String(r['شماره_گروه'] || '').trim(),\n      names: [],\n    };\n    slotOrder.push(key);\n  }\n  const nm = String(r['نام_فراگیر'] || '').trim();\n  if (nm && slotMap[key].names.indexOf(nm) < 0) slotMap[key].names.push(nm);\n  if (!slotMap[key].group && r['شماره_گروه']) slotMap[key].group = String(r['شماره_گروه']).trim();\n}\n\nlet previewText;\nif (!slotOrder.length) {\n  previewText = 'اطلاعات کلاس فراگیر را پر کنید. هنوز هیچ کلاسی در برنامهٔ هفتگی ثبت نشده است — این اولین ثبت است.';\n} else {\n  const lines = ['📋 کلاس‌های ثبت‌شدهٔ فعلی — برای پرهیز از ثبت تکراری اول این فهرست را ببینید:', ''];\n  const cap = Math.min(slotOrder.length, 40);\n  for (let i = 0; i < cap; i++) {\n    const s = slotMap[slotOrder[i]];\n    const g = s.group ? ('گروه ' + s.group) : 'بدون گروه';\n    const cnt = s.names.length;\n    const who = s.names.length ? (s.names.join('، ') + (cnt > 1 ? (' (' + cnt + ' نفر — کلاس گروهی)') : '')) : '—';\n    lines.push('• ' + s.cls + ' — ' + s.day + ' ' + s.time + ' — ' + s.place + ' — ' + g + ': ' + who);\n  }\n  if (slotOrder.length > cap) lines.push('… و ' + (slotOrder.length - cap) + ' مورد دیگر.');\n  lines.push('');\n  lines.push('اگر همین فراگیر در همین روز/ساعت/کلاس از قبل هست، دوباره ثبت نکنید. اگر فراگیرِ تازه‌ای در یک روز/ساعت مشترک است، سیستم خودش او را در همان شمارهٔ گروه ثبت می‌کند.');\n  previewText = lines.join('\\n');\n}\n\nconst ft = $('فرم ثبت سریع').first().json;\nconst kind = String(ft['نوع_ثبت'] || '');\n\nreturn [{\n  json: {\n    kind: kind,\n    todayISO: todayISO,\n    settings: settings,\n    teachers: teachers,\n    classes: classes,\n    previewText: previewText,\n    formSessionJson: JSON.stringify(formSession),\n    formWeeklyJson: JSON.stringify(formWeekly),\n  },\n}];\n"
+      },
+      "id": "138e91d2-eff0-4952-b93c-794f8982337b",
+      "name": "آماده‌سازی فرم",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.kind }}",
+                    "operator": {
+                      "operation": "contains",
+                      "type": "string"
+                    },
+                    "rightValue": "کلاس برگزار"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              }
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.kind }}",
+                    "operator": {
+                      "operation": "contains",
+                      "type": "string"
+                    },
+                    "rightValue": "برنامه"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dd0ad57d-7b13-489f-8bb9-a49ad0442011",
+      "name": "مسیر ثبت",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        208,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1430613514",
+          "cachedResultName": "لاگ_ورودی"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "زمان": "={{ $json[\"زمان_ثبت\"] || $now.toISO() }}",
+            "منبع": "={{ $json[\"منبع\"] || \"فرم\" }}",
+            "نوع_رکورد": "={{ $(\"آماده‌سازی فرم\").first().json.kind }}",
+            "شناسه_مرتبط": "={{ $json[\"شناسه\"] }}",
+            "وضعیت": "ثبت شد",
+            "پیام": "={{ $json[\"توضیح\"] || \"\" }}",
+            "داده_خام": "={{ JSON.stringify($json) }}"
+          }
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "4ad09b59-e920-45d5-b815-c44a6948e210",
+      "name": "ثبت در لاگ ورودی",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1408,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "defineForm": "json",
+        "jsonOutput": "={{ $json.formSessionJson }}",
+        "options": {
+          "formTitle": "ثبت کلاس برگزارشده",
+          "formDescription": "کلاس‌هایی که طی برنامهٔ هفتگی برگزار شده‌اند. این فهرست فقط سوابق برگزاری است —  📋 <a href=\"/webhook/barnameh-farda\" target=\"_blank\">فهرست کلاس‌ها و جلسات جبرانی را ببینید</a>. برای جلسهٔ جبرانی: وضعیت را «جبرانی» بزنید و مکان را دقیق انتخاب کنید تا با کلاس دیگری در همان زمان/مکان تداخل نکند.",
+          "buttonLabel": "ثبت کلاس"
+        }
+      },
+      "id": "13fa9d45-6023-414f-b7a4-1d86ef261c3d",
+      "name": "فرم کلاس برگزارشده",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        464,
+        160
+      ],
+      "webhookId": "4ac6bbbc-9ff3-4699-897b-44d071925ece"
+    },
+    {
+      "parameters": {
+        "jsCode": "function div(a,b){return ~~(a/b);}\nfunction mod(a,b){return a-~~(a/b)*b;}\nfunction jalCal(jy){var bk=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178],bl=bk.length,gy=jy+621,leapJ=-14,jp=bk[0],jm,jump=0,leap,n,i;if(jy<jp||jy>=bk[bl-1])throw new Error('سال شمسی نامعتبر');for(i=1;i<bl;i++){jm=bk[i];jump=jm-jp;if(jy<jm)break;leapJ=leapJ+div(jump,33)*8+div(mod(jump,33),4);jp=jm;}n=jy-jp;leapJ=leapJ+div(n,33)*8+div(mod(n,33)+3,4);if(mod(jump,33)===4&&jump-n===4)leapJ+=1;var leapG=div(gy,4)-div((div(gy,100)+1)*3,4)-150,march=20+leapJ-leapG;if(jump-n<6)n=n-jump+div(jump+4,33)*33;leap=mod(mod(n+1,33)-1,4);if(leap===-1)leap=4;return{leap:leap,gy:gy,march:march};}\nfunction g2d(gy,gm,gd){var d=div((gy+div(gm-8,6)+100100)*1461,4)+div(153*mod(gm+9,12)+2,5)+gd-34840408;d=d-div(div(gy+100100+div(gm-8,6),100)*3,4)+752;return d;}\nfunction d2g(jdn){var j=4*jdn+139361631;j=j+div(div(4*jdn+183187720,146097)*3,4)*4-3908;var i=div(mod(j,1461),4)*5+308,gd=div(mod(i,153),5)+1,gm=mod(div(i,153),12)+1,gy=div(j,1461)-100100+div(8-gm,6);return{gy:gy,gm:gm,gd:gd};}\nfunction d2j(jdn){var gy=d2g(jdn).gy,jy=gy-621,r=jalCal(jy),jdn1f=g2d(gy,3,r.march),k=jdn-jdn1f,jm,jd;if(k>=0){if(k<=185){jm=1+div(k,31);jd=mod(k,31)+1;return{jy:jy,jm:jm,jd:jd};}k-=186;}else{jy-=1;k+=179;if(r.leap===1)k+=1;}jm=7+div(k,30);jd=mod(k,30)+1;return{jy:jy,jm:jm,jd:jd};}\nfunction pad(n){return String(n).length<2?'0'+n:String(n);}\nfunction toJ(iso){var p=String(iso).slice(0,10).split('-');return d2j(g2d(+p[0],+p[1],+p[2]));}\nfunction toNum(v){var s=String(v==null?'':v).replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d);}).replace(/[٫٬،,_\\s]/g,'').replace(/\\.(?=\\d{3}(\\D|$))/g,'').replace(/[^0-9.\\-]/g,'');var n=Number(s);return Number.isFinite(n)?n:0;}\n\nconst WEEK = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];\n\nconst f = $input.first().json;\nconst prep = $('آماده‌سازی فرم').first().json;\n\nconst iso = String(f['تاریخ برگزاری'] || f['تاریخ'] || prep.todayISO).slice(0, 10);\nconst j = toJ(iso);\nconst weekday = WEEK[new Date(iso + 'T12:00:00Z').getUTCDay()];\n\nconst classLabel = String(f['کلاس'] || f['کلاس (کد یا نام)'] || '');\nconst classCode = classLabel.indexOf(' — ') > 0 ? classLabel.split(' — ')[0].trim() : classLabel.trim();\nconst cls = (prep.classes || []).filter(function (c) { return String(c['کد_کلاس']).trim() === classCode; })[0]\n         || (prep.classes || []).filter(function (c) { return String(c['نام_کلاس']).trim() === classCode; })[0]\n         || {};\nconst teacher = (prep.teachers || []).filter(function (t) { return t['کد_مدرس'] === cls['کد_مدرس']; })[0] || {};\n\nconst id = 'SC-' + j.jy + pad(j.jm) + '-' + Date.now().toString(36).slice(-5).toUpperCase();\n\nreturn [{\n  json: {\n    'شناسه': id,\n    'تاریخ_شمسی': j.jy + '/' + pad(j.jm) + '/' + pad(j.jd),\n    'تاریخ_میلادی': iso,\n    'سال_شمسی': j.jy,\n    'ماه_شمسی': j.jm,\n    'روز_هفته': weekday,\n    'کد_کلاس': cls['کد_کلاس'] || classCode,\n    'نام_کلاس': cls['نام_کلاس'] || classLabel,\n    'نوع_کلاس': String(cls['نوع_کلاس'] || ''),\n    'کد_مدرس': cls['کد_مدرس'] || '',\n    'نام_مدرس': teacher['نام_مدرس'] || '',\n    'مکان': String(f['مکان برگزاری'] || ''),\n    'ساعت': String(f['ساعت'] || ''),\n    'تعداد_جلسه': toNum(f['تعداد جلسه']) || 1,\n    'تعداد_فراگیر': toNum(f['تعداد فراگیر حاضر']),\n    'وضعیت': String(f['وضعیت'] || 'برگزار شد'),\n    'توضیح': String(f['توضیح'] || ''),\n    'منبع': 'فرم',\n    'زمان_ثبت': new Date().toISOString(),\n  },\n}];\n"
+      },
+      "id": "42602f25-8873-41c0-ba27-7121e09f9f8f",
+      "name": "نرمال‌سازی کلاس",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1360814277"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "insertInNewColumn"
+        }
+      },
+      "id": "3ce5dcbd-e2f7-40d5-987d-713db6fc8bcb",
+      "name": "ثبت در برنامه کلاس‌ها",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        912,
+        160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "ثبت شد",
+        "completionMessage": "={{ (function(){ try { var s=$('نرمال‌سازی برنامه').first().json['_پیام']; if(s) return s; } catch(e){} return 'نوع: ' + ($json['نوع_رکورد']||'') + '\\nشناسه رکورد: ' + ($json['شناسه_مرتبط']||'') + '\\n\\nبرای ثبت مورد بعدی صفحه را دوباره باز کنید.'; })() }}",
+        "options": {}
+      },
+      "id": "655eb39d-9827-4db2-83ad-8d76c4e5ad57",
+      "name": "پایان ثبت",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        1632,
+        0
+      ],
+      "webhookId": "ce2bb92e-8a3e-41f4-97d7-b3761a4d6a72"
+    },
+    {
+      "parameters": {
+        "content": "## فرم ثبت سریع (لینک را روی گوشی بوکمارک کنید)\n\nآدرس فرم = **Production URL** روی نود «فرم ثبت سریع».\n\nمسیر: `/form/sabt-farda`\n\nلیست کشویی مدرس، کلاس و سرمایه‌گذار **زنده از گوگل‌شیت** خوانده می‌شود؛ کافی است ردیف جدید را در شیت اضافه کنید — فرم خودش به‌روز می‌شود.",
+        "height": 240,
+        "width": 1080,
+        "color": 4
+      },
+      "id": "8c3d311c-367a-40c2-9051-552a4aa4fc0f",
+      "name": "Sticky Note a1a37517",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## این مسیر پول حساب نمی‌کند\n\nشیت **برنامه_کلاس‌ها** فقط سوابق برگزاری است: چه کلاسی، چه روزی، چه ساعتی، با چند شاگرد، برگزار شد یا لغو.\n\n**حقوق مدرس از اینجا حساب نمی‌شود.** مبنای حقوق، ستون `سهم_مدرس` روی واریزی‌های شیت **درآمد** است که از فرم `/form/farda` ثبت می‌شوند. ورک‌فلوی ۰۳ همان را جمع می‌زند.\n\nپس اگر کلاسی را اینجا ثبت کنید و شهریه‌اش را نه، حقوقی هم حساب نمی‌شود — و برعکس.",
+        "height": 260,
+        "width": 660,
+        "color": 3
+      },
+      "id": "ce9d3178-d1e7-4e15-b5bb-8be21a74d62d",
+      "name": "Sticky Note c1de12d6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        416,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "defineForm": "json",
+        "jsonOutput": "={{ $json.formWeeklyJson }}",
+        "options": {
+          "formTitle": "برنامهٔ کلاسی شاگرد",
+          "formDescription": "📋 <a href=\"/webhook/barnameh-farda\" target=\"_blank\"><b>فهرست کلاس‌ها و گروه‌ها را ببینید</b></a> — پیش از ثبت، تا کلاس تکراری ثبت نشود. سپس اطلاعات فراگیر را پر کنید.",
+          "buttonLabel": "ثبت در برنامه"
+        }
+      },
+      "id": "4aa83864-7270-4844-b1cb-c0930b31d7bf",
+      "name": "فرم برنامهٔ شاگرد",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        464,
+        528
+      ],
+      "webhookId": "2420fe01-803d-4a28-99a5-7a525ade45b1"
+    },
+    {
+      "parameters": {
+        "jsCode": "function div(a,b){return ~~(a/b);}\nfunction mod(a,b){return a-~~(a/b)*b;}\nfunction jalCal(jy){var bk=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178],bl=bk.length,gy=jy+621,leapJ=-14,jp=bk[0],jm,jump=0,leap,n,i;if(jy<jp||jy>=bk[bl-1])throw new Error('سال شمسی نامعتبر');for(i=1;i<bl;i++){jm=bk[i];jump=jm-jp;if(jy<jm)break;leapJ=leapJ+div(jump,33)*8+div(mod(jump,33),4);jp=jm;}n=jy-jp;leapJ=leapJ+div(n,33)*8+div(mod(n,33)+3,4);if(mod(jump,33)===4&&jump-n===4)leapJ+=1;var leapG=div(gy,4)-div((div(gy,100)+1)*3,4)-150,march=20+leapJ-leapG;if(jump-n<6)n=n-jump+div(jump+4,33)*33;leap=mod(mod(n+1,33)-1,4);if(leap===-1)leap=4;return{leap:leap,gy:gy,march:march};}\nfunction g2d(gy,gm,gd){var d=div((gy+div(gm-8,6)+100100)*1461,4)+div(153*mod(gm+9,12)+2,5)+gd-34840408;d=d-div(div(gy+100100+div(gm-8,6),100)*3,4)+752;return d;}\nfunction d2g(jdn){var j=4*jdn+139361631;j=j+div(div(4*jdn+183187720,146097)*3,4)*4-3908;var i=div(mod(j,1461),4)*5+308,gd=div(mod(i,153),5)+1,gm=mod(div(i,153),12)+1,gy=div(j,1461)-100100+div(8-gm,6);return{gy:gy,gm:gm,gd:gd};}\nfunction d2j(jdn){var gy=d2g(jdn).gy,jy=gy-621,r=jalCal(jy),jdn1f=g2d(gy,3,r.march),k=jdn-jdn1f,jm,jd;if(k>=0){if(k<=185){jm=1+div(k,31);jd=mod(k,31)+1;return{jy:jy,jm:jm,jd:jd};}k-=186;}else{jy-=1;k+=179;if(r.leap===1)k+=1;}jm=7+div(k,30);jd=mod(k,30)+1;return{jy:jy,jm:jm,jd:jd};}\nfunction pad(n){return String(n).length<2?'0'+n:String(n);}\nfunction toJ(iso){var p=String(iso).slice(0,10).split('-');return d2j(g2d(+p[0],+p[1],+p[2]));}\nfunction fa2en(s){return String(s==null?'':s).replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d);});}\nfunction normTime(s){return fa2en(s).replace(/\\s+/g,'').replace('،','').trim();}\nfunction normName(s){return String(s==null?'':s).replace(/\\s+/g,' ').trim();}\nfunction normMobile(s){return fa2en(s).replace(/\\D/g,'');}\nfunction safeRows(nodeName){try{return $(nodeName).all().map(function(i){return i.json||{};});}catch(e){return [];}}\n\nconst p1 = $('فرم برنامهٔ شاگرد').first().json;\nconst p2 = $input.first().json;\nconst prep = $('آماده‌سازی فرم').first().json;\n\nlet nDays = 1;\ntry { nDays = $('ساخت روزهای هفته').first().json.nDays || 1; } catch (e) { nDays = 1; }\n\nconst iso = String(p1['تاریخ شروع'] || prep.todayISO).slice(0, 10);\nconst j = toJ(iso);\nconst startShamsi = j.jy + '/' + pad(j.jm) + '/' + pad(j.jd);\n\nconst classLabel = String(p1['کلاس'] || p1['کلاس (کد یا نام)'] || '');\nconst classCode = classLabel.indexOf(' — ') > 0 ? classLabel.split(' — ')[0].trim() : classLabel.trim();\nconst cls = (prep.classes || []).filter(function (c) { return String(c['کد_کلاس']).trim() === classCode; })[0]\n         || (prep.classes || []).filter(function (c) { return String(c['نام_کلاس']).trim() === classCode; })[0]\n         || {};\n\nconst tLabel = String(p1['نام مدرس'] || '');\nconst tCode = tLabel.indexOf(' — ') > 0 ? tLabel.split(' — ')[0].trim() : '';\nlet teacher = null;\nif (cls['کد_مدرس']) teacher = (prep.teachers || []).filter(function (t) { return t['کد_مدرس'] === cls['کد_مدرس']; })[0];\nif (!teacher && tCode) teacher = (prep.teachers || []).filter(function (t) { return String(t['کد_مدرس']).trim() === tCode; })[0];\nif (!teacher && tLabel) teacher = (prep.teachers || []).filter(function (t) { return String(t['نام_مدرس']).trim() === tLabel || String(t['نام_مدرس']).indexOf(tLabel) >= 0; })[0];\nteacher = teacher || {};\nconst teacherName = teacher['نام_مدرس'] || (tLabel.indexOf(' — ') > 0 ? tLabel.split(' — ')[1].trim() : tLabel);\n\nconst stamp = Date.now().toString(36).slice(-5).toUpperCase();\n\nconst clsCode = cls['کد_کلاس'] || classCode;\nconst clsName = cls['نام_کلاس'] || classLabel;\nconst place = String(p1['مکان برگزاری'] || '');\nconst learnerName = normName(p1['نام فراگیر']);\nconst learnerMobile = normMobile(p1['موبایل فراگیر']);\nconst memberKey = learnerName + '|' + learnerMobile;\n\n// --- ساخت نقشهٔ اسلات‌های موجود از برنامهٔ هفتگی ---\nfunction slotKeyOf(clsC, day, startT, plc) {\n  return [String(clsC || '').trim(), String(day || '').trim(), normTime(startT), String(plc || '').trim()].join('|');\n}\nconst existingRows = safeRows('خواندن برنامه هفتگی').filter(function (r) {\n  const st = String(r['وضعیت'] || '').trim();\n  return st !== 'غیرفعال' && st !== 'حذف' && (r['نام_فراگیر'] || r['کد_کلاس']);\n});\nconst slots = {};\nlet maxGroup = 0;\nfor (let i = 0; i < existingRows.length; i++) {\n  const r = existingRows[i];\n  const key = slotKeyOf(r['کد_کلاس'], r['روز_هفته'], r['ساعت_شروع'], r['مکان']);\n  if (!slots[key]) slots[key] = { group: '', members: {}, count: 0 };\n  const g = String(r['شماره_گروه'] || '').trim();\n  if (g && !slots[key].group) slots[key].group = g;\n  const gm = g.match(/(\\d+)/);\n  if (gm) { const gn = parseInt(gm[1], 10); if (gn > maxGroup) maxGroup = gn; }\n  const mk = normName(r['نام_فراگیر']) + '|' + normMobile(r['موبایل_فراگیر']);\n  if (!slots[key].members[mk]) { slots[key].members[mk] = true; slots[key].count++; }\n}\n\nconst shared = {\n  'نام_فراگیر': String(p1['نام فراگیر'] || ''),\n  'موبایل_فراگیر': String(p1['موبایل فراگیر'] || ''),\n  'کد_کلاس': clsCode,\n  'نام_کلاس': clsName,\n  'نوع_کلاس': String(p1['نوع کلاس'] || cls['نوع_کلاس'] || ''),\n  'قالب_کلاس': String(p1['قالب کلاس'] || ''),\n  'مکان': place,\n  'کد_مدرس': teacher['کد_مدرس'] || '',\n  'نام_مدرس': teacherName || '',\n  'تاریخ_شروع': startShamsi,\n  'وضعیت': String(p1['وضعیت'] || 'فعال'),\n  'توضیح': String(p1['توضیح'] || ''),\n  'منبع': 'فرم',\n};\n\nfunction ensureGroup(key) {\n  if (!slots[key]) slots[key] = { group: '', members: {}, count: 0 };\n  if (!slots[key].group) { maxGroup++; slots[key].group = 'G-' + maxGroup; }\n  return slots[key].group;\n}\n\nconst written = [];   // {day, time, group, count}\nconst dups = [];      // {day, time}\nconst out = [];\n\nfor (let i = 1; i <= nDays; i++) {\n  const day = String(p2['روز ' + i + ' — روز هفته'] || '');\n  const st = String(p2['روز ' + i + ' — ساعت شروع'] || '');\n  const en = String(p2['روز ' + i + ' — ساعت پایان'] || '');\n  if (!day && !st) continue;\n\n  const key = slotKeyOf(clsCode, day, st, place);\n  const isDup = slots[key] && slots[key].members[memberKey];\n\n  if (isDup) {\n    dups.push({ day: day, time: st });\n    out.push({ json: Object.assign({}, shared, {\n      'شناسه': 'WP-' + j.jy + pad(j.jm) + '-' + stamp + '-' + i,\n      'روز_هفته': day, 'ساعت_شروع': st, 'ساعت_پایان': en,\n      'شماره_گروه': (slots[key] && slots[key].group) || '',\n      'زمان_ثبت': new Date().toISOString(),\n      '_write': false,\n    }) });\n    continue;\n  }\n\n  const group = ensureGroup(key);\n  slots[key].members[memberKey] = true;\n  slots[key].count++;\n  written.push({ day: day, time: st, group: group, count: slots[key].count });\n\n  out.push({ json: Object.assign({}, shared, {\n    'شناسه': 'WP-' + j.jy + pad(j.jm) + '-' + stamp + '-' + i,\n    'روز_هفته': day, 'ساعت_شروع': st, 'ساعت_پایان': en,\n    'شماره_گروه': group,\n    'زمان_ثبت': new Date().toISOString(),\n    '_write': true,\n  }) });\n}\n\nif (!out.length) {\n  const key = slotKeyOf(clsCode, '', '', place);\n  const group = ensureGroup(key);\n  written.push({ day: '', time: '', group: group, count: slots[key].count + 1 });\n  out.push({ json: Object.assign({}, shared, {\n    'شناسه': 'WP-' + j.jy + pad(j.jm) + '-' + stamp,\n    'روز_هفته': '', 'ساعت_شروع': '', 'ساعت_پایان': '',\n    'شماره_گروه': group,\n    'زمان_ثبت': new Date().toISOString(),\n    '_write': true,\n  }) });\n}\n\n// --- پیام نتیجه ---\nconst msg = [];\nmsg.push('فراگیر: ' + (shared['نام_فراگیر'] || '—') + ' — کلاس: ' + clsName);\nif (written.length) {\n  msg.push('');\n  msg.push('✅ ثبت شد:');\n  for (let i = 0; i < written.length; i++) {\n    const w = written[i];\n    const grp = w.count > 1 ? (w.group + ' (کلاس گروهی — ' + w.count + ' نفر)') : (w.group + ' (فعلاً ۱ نفر)');\n    msg.push('• ' + (w.day ? (w.day + ' ') : '') + (w.time || '') + ' → گروه ' + grp);\n  }\n}\nif (dups.length) {\n  msg.push('');\n  msg.push('⚠️ این موارد از قبل برای همین فراگیر ثبت شده بود و دوباره ثبت نشد:');\n  for (let i = 0; i < dups.length; i++) {\n    msg.push('• ' + (dups[i].day ? (dups[i].day + ' ') : '') + (dups[i].time || ''));\n  }\n}\nmsg.push('');\nmsg.push('برای ثبت مورد بعدی صفحه را دوباره باز کنید.');\nconst summary = msg.join('\\n');\n\nfor (let i = 0; i < out.length; i++) { out[i].json['_پیام'] = summary; }\n\nreturn out;\n"
+      },
+      "id": "ac28259a-9e9f-4ebc-9d16-801e7d0f7cef",
+      "name": "نرمال‌سازی برنامه",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا",
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4"
+        },
+        "sheetName": {
+          "__rl": true,
+          "cachedResultName": "برنامه_هفتگی",
+          "mode": "list",
+          "value": "1449811573"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "insertInNewColumn"
+        }
+      },
+      "id": "accaf127-2f7a-4b67-a5dc-0116c87b019f",
+      "name": "ثبت در برنامه هفتگی",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        912,
+        528
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## برنامهٔ هفتگی آموزشگاه\n\nشیت **برنامه_هفتگی** = چه شاگردی، چه کلاسی، چه روزی، چه ساعتی — برنامهٔ ثابت هفته.\n\nهر ردیف یک جلسهٔ ثابت است. شاگردی که دو روز در هفته می‌آید = دو ردیف.\n\nاین شیت هم پول حساب نمی‌کند — فقط برنامه‌ریزی و سوابق. مبنای حقوق مدرس، ستون `سهم_مدرس` روی واریزی‌های شیت **درآمد** است.",
+        "height": 260,
+        "width": 660,
+        "color": 5
+      },
+      "id": "6b38de3d-9fb7-4f6d-8447-4fd91fbe5c91",
+      "name": "Sticky Note weekly",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        416,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function fa2en(s) {\n  return String(s == null ? '' : s).replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); });\n}\nfunction opts(arr) { return { values: arr.map(function (o) { return { option: String(o) }; }) }; }\n\nconst f = $('فرم برنامهٔ شاگرد').first().json;\nlet n = parseInt(fa2en(String(f['تعداد روز در هفته'] || '1')), 10);\nif (!Number.isFinite(n) || n < 1) n = 1;\nif (n > 7) n = 7;\n\nconst DAYS = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'];\n\nconst fields = [];\nfor (let i = 1; i <= n; i++) {\n  fields.push({ fieldLabel: 'روز ' + i + ' — روز هفته', fieldType: 'dropdown', requiredField: true, fieldOptions: opts(DAYS) });\n  fields.push({ fieldLabel: 'روز ' + i + ' — ساعت شروع', fieldType: 'text', requiredField: true, placeholder: 'مثلاً 16:00' });\n  fields.push({ fieldLabel: 'روز ' + i + ' — ساعت پایان', fieldType: 'text', requiredField: false, placeholder: 'مثلاً 17:30' });\n}\n\nreturn [{ json: { nDays: n, formDaysJson: JSON.stringify(fields) } }];\n"
+      },
+      "id": "a856561a-db26-4160-9ad5-0b8fd879761e",
+      "name": "ساخت روزهای هفته",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "defineForm": "json",
+        "jsonOutput": "={{ $json.formDaysJson }}",
+        "options": {
+          "formTitle": "ساعت‌های هفته",
+          "formDescription": "برای هر روزی که فراگیر کلاس دارد، روز هفته و ساعتش را پر کنید.",
+          "buttonLabel": "ثبت برنامه"
+        }
+      },
+      "id": "e6b95a0e-8735-4a78-bd9b-dd78f700090f",
+      "name": "فرم روزهای هفته",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        912,
+        400
+      ],
+      "webhookId": "f18202aa-f48b-4119-8cbd-9c5b39628ea6"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا",
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4"
+        },
+        "sheetName": {
+          "__rl": true,
+          "cachedResultName": "برنامه_هفتگی",
+          "mode": "list",
+          "value": "1449811573"
+        },
+        "options": {}
+      },
+      "id": "5c8bdf80-1f7a-4e14-9184-39516d38f9db",
+      "name": "خواندن برنامه هفتگی",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -240,
+        192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond_write",
+              "leftValue": "={{ $json._write }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "id": "23f9f7f6-e560-4ea1-98d4-779e3a290121",
+      "name": "آیا ثبت شود؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        832,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(function (it) {\n  var j = Object.assign({}, it.json);\n  delete j['_write'];\n  delete j['_پیام'];\n  return { json: j };\n});\n"
+      },
+      "id": "1c41c33a-1368-40d7-92ab-dc30f5ce0007",
+      "name": "پاک‌سازی ستون‌ها",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        448
+      ]
+    }
+  ],
+  "connections": {
+    "فرم ثبت سریع": {
+      "main": [
+        [
+          {
+            "node": "خواندن تنظیمات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "خواندن تنظیمات": {
+      "main": [
+        [
+          {
+            "node": "خواندن مدرسین",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "خواندن مدرسین": {
+      "main": [
+        [
+          {
+            "node": "خواندن کلاس‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "آماده‌سازی فرم": {
+      "main": [
+        [
+          {
+            "node": "مسیر ثبت",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "مسیر ثبت": {
+      "main": [
+        [
+          {
+            "node": "فرم کلاس برگزارشده",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "فرم برنامهٔ شاگرد",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        []
+      ]
+    },
+    "ثبت در لاگ ورودی": {
+      "main": [
+        [
+          {
+            "node": "پایان ثبت",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "فرم کلاس برگزارشده": {
+      "main": [
+        [
+          {
+            "node": "نرمال‌سازی کلاس",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "نرمال‌سازی کلاس": {
+      "main": [
+        [
+          {
+            "node": "ثبت در برنامه کلاس‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت در برنامه کلاس‌ها": {
+      "main": [
+        [
+          {
+            "node": "ثبت در لاگ ورودی",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت در برنامه هفتگی": {
+      "main": [
+        [
+          {
+            "node": "ثبت در لاگ ورودی",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "فرم برنامهٔ شاگرد": {
+      "main": [
+        [
+          {
+            "node": "ساخت روزهای هفته",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ساخت روزهای هفته": {
+      "main": [
+        [
+          {
+            "node": "فرم روزهای هفته",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "فرم روزهای هفته": {
+      "main": [
+        [
+          {
+            "node": "نرمال‌سازی برنامه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "خواندن کلاس‌ها": {
+      "main": [
+        [
+          {
+            "node": "خواندن برنامه هفتگی",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "خواندن برنامه هفتگی": {
+      "main": [
+        [
+          {
+            "node": "آماده‌سازی فرم",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "نرمال‌سازی برنامه": {
+      "main": [
+        [
+          {
+            "node": "آیا ثبت شود؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "آیا ثبت شود؟": {
+      "main": [
+        [
+          {
+            "node": "پاک‌سازی ستون‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "پایان ثبت",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "پاک‌سازی ستون‌ها": {
+      "main": [
+        [
+          {
+            "node": "ثبت در برنامه هفتگی",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Asia/Tehran",
+    "saveDataErrorExecution": "all",
+    "binaryMode": "separate"
+  }
+}

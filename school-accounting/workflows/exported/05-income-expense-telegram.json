@@ -1,0 +1,1740 @@
+{
+  "id": "EP0X5nQgGxUGSqMj",
+  "name": "۰۵ | پروژه حسابداری آموزشگاه : ثبت واریزی و هزینه با تأیید تلگرامی",
+  "description": "دو فرم جداگانه (واریزی و هزینه) به‌علاوهٔ وبهوک POST. روی هر واریزی، دوره و مدرس پیدا می‌شوند و سهم مدرس و سهم آموزشگاه در همان لحظه قفل می‌شوند.",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hook-6m2ptr",
+        "options": {
+          "ignoreBots": true,
+          "responseCode": {
+            "values": {}
+          },
+          "responseData": "{\"ok\":true,\"message\":\"دریافت شد و برای تایید به تلگرام ارسال گردید\"}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "content-type",
+                "value": "application/json; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "035c33af-9118-43bf-a498-55ba731d41c2",
+      "name": "وبهوک ورودی",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1248,
+        0
+      ],
+      "webhookId": "21f7d70d-04e5-4c0d-91d1-fcacecf1dd3f"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1854744989",
+          "cachedResultName": "تنظیمات"
+        },
+        "options": {}
+      },
+      "id": "1d069aeb-fba5-4590-8c0b-e76134bb52a3",
+      "name": "تنظیمات",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1024,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "337802420",
+          "cachedResultName": "کلاس‌ها"
+        },
+        "options": {}
+      },
+      "id": "3e0e952e-255d-4d4b-a06a-d36a0bb4c4f3",
+      "name": "کلاس‌ها",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -800,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function div(a,b){return ~~(a/b);}\nfunction mod(a,b){return a-~~(a/b)*b;}\nfunction jalCal(jy){var bk=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178],bl=bk.length,gy=jy+621,leapJ=-14,jp=bk[0],jm,jump=0,leap,n,i;if(jy<jp||jy>=bk[bl-1])throw new Error('سال شمسی نامعتبر');for(i=1;i<bl;i++){jm=bk[i];jump=jm-jp;if(jy<jm)break;leapJ=leapJ+div(jump,33)*8+div(mod(jump,33),4);jp=jm;}n=jy-jp;leapJ=leapJ+div(n,33)*8+div(mod(n,33)+3,4);if(mod(jump,33)===4&&jump-n===4)leapJ+=1;var leapG=div(gy,4)-div((div(gy,100)+1)*3,4)-150,march=20+leapJ-leapG;if(jump-n<6)n=n-jump+div(jump+4,33)*33;leap=mod(mod(n+1,33)-1,4);if(leap===-1)leap=4;return{leap:leap,gy:gy,march:march};}\nfunction g2d(gy,gm,gd){var d=div((gy+div(gm-8,6)+100100)*1461,4)+div(153*mod(gm+9,12)+2,5)+gd-34840408;d=d-div(div(gy+100100+div(gm-8,6),100)*3,4)+752;return d;}\nfunction d2g(jdn){var j=4*jdn+139361631;j=j+div(div(4*jdn+183187720,146097)*3,4)*4-3908;var i=div(mod(j,1461),4)*5+308,gd=div(mod(i,153),5)+1,gm=mod(div(i,153),12)+1,gy=div(j,1461)-100100+div(8-gm,6);return{gy:gy,gm:gm,gd:gd};}\nfunction d2j(jdn){var gy=d2g(jdn).gy,jy=gy-621,r=jalCal(jy),jdn1f=g2d(gy,3,r.march),k=jdn-jdn1f,jm,jd;if(k>=0){if(k<=185){jm=1+div(k,31);jd=mod(k,31)+1;return{jy:jy,jm:jm,jd:jd};}k-=186;}else{jy-=1;k+=179;if(r.leap===1)k+=1;}jm=7+div(k,30);jd=mod(k,30)+1;return{jy:jy,jm:jm,jd:jd};}\nfunction j2d(jy,jm,jd){var r=jalCal(jy);return g2d(r.gy,3,r.march)+(jm-1)*31-div(jm,7)*(jm-7)+jd-1;}\nfunction pad(n){return String(n).length<2?'0'+n:String(n);}\nfunction jToISO(jy,jm,jd){var g=d2g(j2d(jy,jm,jd));return g.gy+'-'+pad(g.gm)+'-'+pad(g.gd);}\nfunction toJ(iso){var p=String(iso).slice(0,10).split('-');return d2j(g2d(+p[0],+p[1],+p[2]));}\nfunction fa2en(s){return String(s==null?'':s).replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d);}).replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d);});}\nfunction toNum(v){var s=fa2en(v).replace(/[٫٬،,_\\s'  ]/g,'');s=s.replace(/\\.(?=\\d{3}(\\D|$))/g,'');s=s.replace(/[^0-9.\\-]/g,'');var n=Number(s);return Number.isFinite(n)?n:0;}\nfunction money(n){try{return Number(n||0).toLocaleString('fa-IR');}catch(e){return String(n);}}\n\nlet src = {};\nlet origin = 'وبهوک';\nlet forced = '';\nlet wh = null;\n\ntry {\n  wh = $('وبهوک ورودی').first().json;\n  src = Object.assign({}, wh.query || {}, wh.body || {});\n} catch (e) { wh = null; }\n\nfunction formJson(nodeName) {\n  try {\n    const f = $(nodeName).first().json;\n    return (f && Object.keys(f).length) ? f : null;\n  } catch (e) { return null; }\n}\n\nif (!Object.keys(src).length) {\n  const fi = formJson('فرم واریزی');\n  const fe = formJson('فرم هزینه');\n  let chosen = null, label = '', kind = '';\n  if (fe && fe['دسته'] !== undefined) { chosen = fe; label = 'فرم هزینه'; kind = 'expense'; }\n  else if (fi && fi['پرداخت_کننده_نوع'] !== undefined) { chosen = fi; label = 'فرم واریزی'; kind = 'income'; }\n  else if (fi) { chosen = fi; label = 'فرم واریزی'; kind = 'income'; }\n  else if (fe) { chosen = fe; label = 'فرم هزینه'; kind = 'expense'; }\n  if (chosen) {\n    const keys = Object.keys(chosen);\n    for (let i = 0; i < keys.length; i++) {\n      if (keys[i] === 'submittedAt' || keys[i] === 'formMode') continue;\n      src[keys[i]] = chosen[keys[i]];\n    }\n    origin = label;\n    forced = kind;\n  }\n}\n\nfunction pick() {\n  for (let i = 0; i < arguments.length; i++) {\n    const k = arguments[i];\n    const keys = Object.keys(src);\n    for (let j = 0; j < keys.length; j++) {\n      if (String(keys[j]).trim().toLowerCase() === String(k).toLowerCase()) {\n        const v = src[keys[j]];\n        if (v !== undefined && v !== null && String(v).trim() !== '') return v;\n      }\n    }\n  }\n  return '';\n}\n\nfunction safeRows(name) { try { return $(name).all().map(function (i) { return i.json || {}; }); } catch (e) { return []; } }\n\nconst settings = {};\nsafeRows('تنظیمات').forEach(function (r) { if (r['کلید']) settings[String(r['کلید']).trim()] = r['مقدار']; });\nconst classes = safeRows('کلاس‌ها').filter(function (c) { return c['کد_کلاس']; });\nconst teachers = safeRows('مدرسین').filter(function (t) { return t['کد_مدرس']; });\n\nconst chatId = String(settings['تلگرام_چت_آیدی'] || '').trim();\nconst wantApproval = String(settings['تلگرام_تأیید_لازم'] || 'بله').trim() !== 'خیر';\nconst needsApproval = wantApproval && chatId !== '';\nconst defaultCat = String(settings['دسته_پیشفرض_هزینه'] || 'سایر').trim();\nconst defPresent = toNum(settings['درصد_پیشفرض_حضوری']) || 70;\nconst defOnline = toNum(settings['درصد_پیشفرض_آنلاین']) || 60;\n\nlet uploaded = '';\ntry { uploaded = String($('جمع لینک فاکتورها').first().json.linkText || ''); } catch (e) { uploaded = ''; }\n\nconst todayISO = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Tehran' });\n\nconst rawDate = String(pick('تاریخ', 'date', 'روز', 'تاریخ_شمسی', 'تاریخ_پرداخت')).trim();\nlet iso = todayISO;\nlet dateNote = '';\nif (rawDate) {\n  const p = fa2en(rawDate).split(/[\\/\\-\\.]/).map(function (x) { return parseInt(x, 10); });\n  if (p.length >= 3 && p.every(function (n) { return Number.isFinite(n); })) {\n    if (p[0] > 1600) iso = p[0] + '-' + pad(p[1]) + '-' + pad(p[2]);\n    else if (p[0] > 1200 && p[0] < 1600) iso = jToISO(p[0], p[1], p[2]);\n    else dateNote = ' [تاریخ خوانده نشد]';\n  } else {\n    const d = new Date(rawDate);\n    if (!isNaN(d.getTime())) iso = d.toISOString().slice(0, 10);\n    else dateNote = ' [تاریخ خوانده نشد]';\n  }\n}\nconst j = toJ(iso);\nconst shamsi = j.jy + '/' + pad(j.jm) + '/' + pad(j.jd);\n\nconst rawType = String(pick('نوع', 'type', 'kind', 'نوع_رکورد')).trim();\nconst category = String(pick('دسته', 'دسته_هزینه', 'category')).trim();\nconst vendor = String(pick('طرف_حساب', 'فروشنده', 'vendor', 'supplier')).trim();\n\nlet isExpense;\nif (forced === 'expense') isExpense = true;\nelse if (forced === 'income') isExpense = false;\nelse if (rawType) isExpense = rawType.indexOf('هزینه') >= 0 || rawType.toLowerCase().indexOf('expense') >= 0 || rawType.toLowerCase().indexOf('cost') >= 0;\nelse isExpense = !!(category || vendor);\n\nconst amount = toNum(pick('مبلغ', 'amount', 'قیمت', 'مبلغ_تومان', 'price', 'total', 'جمع'));\nconst method = String(pick('روش_پرداخت', 'روش پرداخت', 'method', 'payment_method')).trim();\nconst desc = String(pick('شرح', 'توضیح', 'description', 'note', 'بابت')).trim();\nconst manualReceipt = String(pick('عکس_فاکتور', 'لینک_فاکتور', 'receipt', 'image_url', 'attachment')).trim();\nconst receipt = [uploaded, manualReceipt].filter(function (x) { return x; }).join(' | ');\nconst ref = String(pick('شماره_پیگیری', 'شماره_فیش', 'کد_رهگیری', 'ref', 'reference', 'tracking')).trim();\nconst payer = String(pick('پرداخت_کننده', 'نام_فراگیر', 'فراگیر', 'نام_شاگرد', 'شاگرد', 'payer', 'student')).trim();\nconst payerKind = String(pick('پرداخت_کننده_نوع', 'نوع_پرداخت_کننده', 'payer_type')).trim();\nconst paymentTerms = String(pick('نوع_پرداخت', 'payment_terms', 'terms')).trim();\nconst recorder = String(pick('ثبت_کننده', 'ثبت کننده', 'recorded_by', 'recorder', 'کاربر')).trim();\nconst classRawIn = String(pick('کلاس', 'دوره', 'کد_کلاس', 'نام_کلاس', 'class', 'course')).trim();\nconst classRaw = (classRawIn === 'ندارد' || classRawIn === '-') ? '' : classRawIn;\nconst teacherRaw = String(pick('نام_مدرس', 'مدرس', 'کد_مدرس', 'teacher')).trim();\nconst pctRaw = toNum(pick('درصد_مدرس', 'درصد مدرس', 'teacher_percent'));\n\nlet cls = {};\nif (classRaw) {\n  const code = classRaw.indexOf(' — ') > 0 ? classRaw.split(' — ')[0].trim() : classRaw;\n  cls = classes.filter(function (c) { return String(c['کد_کلاس']).trim() === code; })[0]\n     || classes.filter(function (c) { return String(c['نام_کلاس']).trim() === classRaw; })[0]\n     || classes.filter(function (c) { return String(c['نام_کلاس']).indexOf(classRaw) >= 0; })[0]\n     || {};\n}\n\nlet teacher = {};\nconst clsTeacherCode = String(cls['کد_مدرس'] || '').trim();\nif (clsTeacherCode) {\n  teacher = teachers.filter(function (t) { return String(t['کد_مدرس']).trim() === clsTeacherCode; })[0] || {};\n}\nif (!teacher['کد_مدرس'] && teacherRaw) {\n  teacher = teachers.filter(function (t) { return String(t['کد_مدرس']).trim() === teacherRaw; })[0]\n         || teachers.filter(function (t) { return String(t['نام_مدرس']).trim() === teacherRaw; })[0]\n         || teachers.filter(function (t) { return String(t['نام_مدرس']).indexOf(teacherRaw) >= 0; })[0]\n         || {};\n}\nconst teacherCode = String(teacher['کد_مدرس'] || '').trim();\nconst teacherName = String(teacher['نام_مدرس'] || '').trim() || teacherRaw;\n\nconst isOnline = String(cls['نوع_کلاس'] || '').indexOf('آنلاین') >= 0;\nlet pct = pctRaw;\nif (!pct) pct = toNum(cls['درصد_مدرس_اختصاصی']);\nif (!pct) pct = isOnline ? toNum(teacher['درصد_آنلاین']) : toNum(teacher['درصد_حضوری']);\nif (!pct && teacherName) pct = isOnline ? defOnline : defPresent;\nif (pct < 0) pct = 0;\nif (pct > 100) pct = 100;\n\nconst teacherShare = teacherName ? Math.round(amount * pct / 100) : 0;\nconst schoolShare = amount - teacherShare;\n\nconst senderIp = wh ? String((wh.headers && (wh.headers['x-forwarded-for'] || wh.headers['x-real-ip'])) || '').split(',')[0].trim() : '';\nconst now = new Date().toISOString();\nconst uid = Date.now().toString(36).slice(-5).toUpperCase();\n\nconst warns = [];\nlet valid = true;\nlet reason = '';\nif (amount <= 0) { valid = false; reason = 'مبلغ معتبر پیدا نشد'; }\n\nconst payerOut = isExpense ? payer : (payer || 'نامشخص');\nif (!isExpense) {\n  if (!payer) warns.push('نام پرداخت‌کننده خالی بود — «نامشخص» ثبت می‌شود');\n  if (classRaw && !cls['کد_کلاس']) warns.push('دوره «' + classRaw + '» در شیت «کلاس‌ها» پیدا نشد — نامش عیناً ثبت می‌شود');\n  if (!teacherName) warns.push('مدرسی مشخص نشد — سهم مدرس صفر ثبت می‌شود');\n  else if (!teacher['کد_مدرس']) warns.push('مدرس «' + teacherName + '» در شیت «مدرسین» نیست — فقط نامش ثبت می‌شود');\n}\nif (dateNote) warns.push('تاریخ خوانده نشد — امروز ثبت می‌شود');\n\nlet incomeType = String(pick('نوع_درآمد', 'income_type')).trim();\nif (!incomeType) {\n  if (payerKind.indexOf('فراگیر') >= 0 || payerKind.indexOf('شاگرد') >= 0 || payerKind.indexOf('دانش') >= 0) incomeType = 'شهریه فراگیر';\n  else if (payerKind.indexOf('سفارش') >= 0 || payerKind.indexOf('پروژه') >= 0) incomeType = 'سفارش پروژه';\n  else if (payerKind.indexOf('مدرسه') >= 0 || payerKind.indexOf('سازمان') >= 0 || payerKind.indexOf('مجموعه') >= 0) incomeType = 'مجموعه همکار';\n  else if (payerKind) incomeType = 'سایر';\n  else {\n    const blob = (desc + ' ' + classRaw + ' ' + payer).trim();\n    if (cls['کد_کلاس'] || classRaw || blob.indexOf('شهریه') >= 0) incomeType = 'شهریه فراگیر';\n    else if (blob.indexOf('همکار') >= 0 || blob.indexOf('مجموعه') >= 0) incomeType = 'مجموعه همکار';\n    else incomeType = 'سایر';\n  }\n}\n\nlet row;\nif (isExpense) {\n  row = {\n    'شناسه': 'EX-' + j.jy + pad(j.jm) + '-W' + uid,\n    'تاریخ_شمسی': shamsi, 'تاریخ_میلادی': iso, 'سال_شمسی': j.jy, 'ماه_شمسی': j.jm,\n    'دسته_هزینه': category || defaultCat,\n    'شرح': desc || ('فاکتور از ' + origin),\n    'مبلغ': amount,\n    'روش_پرداخت': method,\n    'طرف_حساب': vendor,\n    'نوع_هزینه': 'متغیر',\n    'توضیح': dateNote.trim(),\n    'منبع': origin + (needsApproval ? '' : ' (بدون تأیید)'),\n    'زمان_ثبت': now,\n    'ثبت_کننده': recorder,\n    'لینک_فاکتور': receipt,\n  };\n} else {\n  row = {\n    'شناسه': 'IN-' + j.jy + pad(j.jm) + '-W' + uid,\n    'تاریخ_شمسی': shamsi, 'تاریخ_میلادی': iso, 'سال_شمسی': j.jy, 'ماه_شمسی': j.jm,\n    'نوع_درآمد': incomeType,\n    'پرداخت_کننده': payerOut,\n    'کد_کلاس': cls['کد_کلاس'] || '',\n    'نام_کلاس': cls['نام_کلاس'] || classRaw,\n    'کد_مدرس': teacherCode,\n    'مبلغ': amount,\n    'روش_پرداخت': method,\n    'شماره_پیگیری': ref,\n    'توضیح': (desc + dateNote).trim(),\n    'منبع': origin + (needsApproval ? '' : ' (بدون تأیید)'),\n    'زمان_ثبت': now,\n    'ثبت_کننده': recorder,\n    'لینک_فاکتور': receipt,\n    'نوع_پرداخت_کننده': payerKind,\n    'نوع_پرداخت': paymentTerms,\n    'نام_مدرس': teacherName,\n    'درصد_مدرس': teacherName ? pct : '',\n    'سهم_مدرس': teacherShare,\n    'سهم_آموزشگاه': schoolShare,\n  };\n}\n\nconst lines = [];\nlines.push(isExpense ? '🧾 فاکتور هزینه — درخواست ثبت' : '💰 واریزی جدید — درخواست ثبت');\nlines.push('');\nlines.push('مبلغ: ' + money(amount) + ' تومان');\nlines.push('تاریخ پرداخت: ' + shamsi);\nif (isExpense) {\n  lines.push('دسته: ' + (category || defaultCat));\n  lines.push('شرح: ' + (desc || '—'));\n  if (vendor) lines.push('طرف حساب: ' + vendor);\n} else {\n  lines.push('پرداخت‌کننده: ' + payerOut + (payerKind ? ' (' + payerKind + ')' : ''));\n  lines.push('نوع درآمد: ' + incomeType);\n  if (paymentTerms) lines.push('نوع پرداخت: ' + paymentTerms);\n  if (cls['کد_کلاس']) lines.push('دوره: ' + cls['کد_کلاس'] + ' — ' + cls['نام_کلاس'] + (cls['نوع_کلاس'] ? ' (' + cls['نوع_کلاس'] + ')' : ''));\n  else if (classRaw) lines.push('دوره: ' + classRaw);\n  if (teacherName) {\n    lines.push('مدرس: ' + teacherName + (teacherCode ? ' (' + teacherCode + ')' : ''));\n    lines.push('درصد مدرس: ' + pct + '٪');\n    lines.push('سهم مدرس: ' + money(teacherShare) + ' تومان');\n    lines.push('سهم آموزشگاه: ' + money(schoolShare) + ' تومان');\n  }\n  if (desc) lines.push('شرح: ' + desc);\n}\nif (method) lines.push('روش پرداخت: ' + method);\nif (ref) lines.push('شماره فیش: ' + ref);\nif (recorder) lines.push('ثبت‌کننده: ' + recorder);\nif (receipt) lines.push('فاکتور: ' + receipt);\nlines.push('');\nlines.push('شناسه: ' + row['شناسه']);\nlines.push('منبع: ' + origin);\nif (senderIp) lines.push('فرستنده: ' + senderIp);\nfor (let w = 0; w < warns.length; w++) lines.push('⚠️ ' + warns[w]);\nlines.push('');\nlines.push(isExpense ? 'با تأیید شما در شیت «هزینه‌ها» ثبت می‌شود.' : 'با تأیید شما در شیت «درآمد» ثبت می‌شود.');\n\nreturn [{\n  json: {\n    valid: valid,\n    reason: reason,\n    chatId: chatId,\n    hasChat: chatId !== '',\n    needsApproval: needsApproval,\n    isExpense: isExpense,\n    origin: origin,\n    receipt: receipt,\n    summary: lines.join('\\n'),\n    row: row,\n    rawPayload: JSON.stringify(src).slice(0, 4000),\n  },\n}];\n"
+      },
+      "id": "f11268cb-8c20-4403-98e0-ffeaf89f60aa",
+      "name": "نرمال‌سازی ورودی وبهوک",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "840ca195-a1e7-44ba-8d7e-208da278cba3",
+      "name": "داده معتبر است؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -368,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.needsApproval }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7fb46329-57bb-4e89-83cf-089b51dcdf7c",
+      "name": "تأیید لازم است؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -144,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $json.chatId }}",
+        "message": "={{ $json.summary }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "✅ ثبت کن",
+            "disapproveLabel": "❌ رد کن"
+          }
+        },
+        "chatApproval": true,
+        "approverIds": "={{ $json.chatId }}",
+        "unauthorizedReplyText": "شما اجازه تأیید این رکورد را ندارید.",
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeAmount": 7,
+              "resumeUnit": "days"
+            }
+          },
+          "appendAttribution": false
+        }
+      },
+      "id": "65fdcf04-9db2-4c24-b5c7-468f628e712c",
+      "name": "تأیید در تلگرام",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        112,
+        -224
+      ],
+      "webhookId": "b64d999e-45c5-4a50-b70a-c8639dedd846",
+      "credentials": {
+        "telegramApi": {
+          "id": "cjOs9DNCijM30X3Y",
+          "name": "ربات حسابداری"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.data.approved }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8b06b027-536e-415c-839a-3f397834bbc5",
+      "name": "تأیید شد؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $('نرمال‌سازی ورودی وبهوک').first().json.row }];"
+      },
+      "id": "955f8c2a-0e02-45f3-a5c8-6a6a191b8610",
+      "name": "بازیابی ردیف",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1430613514",
+          "cachedResultName": "لاگ_ورودی"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "زمان": "={{ $now.toISO() }}",
+            "منبع": "وبهوک",
+            "نوع_رکورد": "={{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.isExpense ? \"هزینه\" : \"درآمد\" }}",
+            "شناسه_مرتبط": "={{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.row[\"شناسه\"] }}",
+            "وضعیت": "رد شد یا بی‌پاسخ ماند",
+            "پیام": "در تلگرام تأیید نشد",
+            "داده_خام": "={{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.rawPayload }}"
+          },
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "زمان",
+              "id": "زمان",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "منبع",
+              "id": "منبع",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "نوع_رکورد",
+              "id": "نوع_رکورد",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "شناسه_مرتبط",
+              "id": "شناسه_مرتبط",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "وضعیت",
+              "id": "وضعیت",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "پیام",
+              "id": "پیام",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "داده_خام",
+              "id": "داده_خام",
+              "required": false,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "4b06efdf-84b4-44e7-a36e-00609c2c750c",
+      "name": "ثبت رد در لاگ",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        112
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.chatId }}",
+        "text": "=❌ ثبت نشد.\n\nشناسه: {{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.row[\"شناسه\"] }}\nدر شیت «لاگ_ورودی» بایگانی شد تا اگر لازم شد پیدایش کنید.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "1651851a-b51b-4225-bcb4-8b072d103555",
+      "name": "پیام رد شد",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        112
+      ],
+      "webhookId": "4c18b470-5288-4ef9-9c9a-96eaa1196fff",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "id": "cjOs9DNCijM30X3Y",
+          "name": "ربات حسابداری"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1430613514",
+          "cachedResultName": "لاگ_ورودی"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "زمان": "={{ $now.toISO() }}",
+            "منبع": "وبهوک",
+            "نوع_رکورد": "نامعتبر",
+            "شناسه_مرتبط": "",
+            "وضعیت": "ناموفق",
+            "پیام": "={{ $json.reason }}",
+            "داده_خام": "={{ $json.rawPayload }}"
+          },
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "زمان",
+              "id": "زمان",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "منبع",
+              "id": "منبع",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "نوع_رکورد",
+              "id": "نوع_رکورد",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "شناسه_مرتبط",
+              "id": "شناسه_مرتبط",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "وضعیت",
+              "id": "وضعیت",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "پیام",
+              "id": "پیام",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "داده_خام",
+              "id": "داده_خام",
+              "required": false,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "004bce2a-4b2e-462a-801d-7d60d8719d36",
+      "name": "ثبت خطا در لاگ",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        208
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.chatId }}",
+        "text": "=⚠️ یک ورودی وبهوک رد شد.\n\nعلت: {{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.reason }}\n\nداده خام در شیت «لاگ_ورودی» ثبت شد.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "b4af9e71-2a78-41e8-b26d-1319a4f4f86b",
+      "name": "پیام خطا",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        112,
+        208
+      ],
+      "webhookId": "b7b9c71e-a4bd-4a76-88e6-5475a64e0478",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "id": "cjOs9DNCijM30X3Y",
+          "name": "ربات حسابداری"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.isExpense }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2576ef60-cbd5-4d5b-b520-55b0c7818b93",
+      "name": "هزینه است؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "226026858",
+          "cachedResultName": "هزینه‌ها"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "069ea5df-1638-489c-a191-230629e7333a",
+      "name": "ثبت هزینه",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        -224
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.chatId }}",
+        "text": "=✅ ثبت شد.\n\nشناسه: {{ $json[\"شناسه\"] }}\nمبلغ: {{ Number($json[\"مبلغ\"] || 0).toLocaleString(\"fa-IR\") }} تومان\nشیت: {{ $(\"نرمال‌سازی ورودی وبهوک\").first().json.isExpense ? \"هزینه‌ها\" : \"درآمد\" }}\n\nhttps://docs.google.com/spreadsheets/d/12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4/edit",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "8f0b955a-6e54-4826-b3b0-100efbdee19c",
+      "name": "پیام ثبت شد",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1504,
+        -160
+      ],
+      "webhookId": "923401f3-fc6c-4b82-b3e8-f297aae12f11",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "id": "cjOs9DNCijM30X3Y",
+          "name": "ربات حسابداری"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1223345002",
+          "cachedResultName": "درآمد"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "98a74bf2-1b37-4782-8b5e-e32d89349eea",
+      "name": "ثبت درآمد",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        -48
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## سهم مدرس چطور حساب می‌شود\n\nروی **هر واریزی**، درصد مدرس به ترتیب از این چهار جا گرفته می‌شود (اولی که پر باشد برنده است):\n\n۱. عددی که خودتان در فرم می‌نویسید\n۲. `درصد_مدرس_اختصاصی` همان دوره در شیت **کلاس‌ها**\n۳. `درصد_حضوری` یا `درصد_آنلاین` خود مدرس در شیت **مدرسین**\n۴. درصد پیش‌فرض در شیت **تنظیمات**\n\nنتیجه در سه ستون شیت **درآمد** قفل می‌شود: `درصد_مدرس` ، `سهم_مدرس` ، `سهم_آموزشگاه`.\n\nقفل‌شدن یعنی اگر فردا درصد یک مدرس را عوض کنید، واریزی‌های گذشته دست نمی‌خورند.\n\nاگر دوره یا مدرس در شیت نباشد، رکورد باز هم ثبت می‌شود و در پیام تأیید هشدار می‌بینید.\n\n### وبهوک (برای سامانه‌ها)\n`POST https://arezoo000.app.n8n.cloud/webhook/farda-hook`\n```\n{ \"نوع\": \"درآمد\", \"مبلغ\": 800000,\n  \"پرداخت_کننده\": \"سارا محمدی\",\n  \"کلاس\": \"C001\", \"تاریخ\": \"1405/06/01\",\n  \"درصد_مدرس\": 70,\n  \"روش_پرداخت\": \"کارت به کارت\" }\n```",
+        "height": 520,
+        "width": 720,
+        "color": 4
+      },
+      "id": "896ee163-9e59-4956-9f97-86ce082b3b4d",
+      "name": "Sticky Note 45f23b4e",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1296,
+        -640
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## تأیید تلگرامی — اختیاری، ولی توصیه می‌شود\n\n**بدون تنظیم هم کار می‌کند:** اگر خانهٔ `تلگرام_چت_آیدی` در شیت **تنظیمات** خالی باشد، هر رکورد مستقیم در گوگل‌شیت ثبت می‌شود و در ستون «منبع» عبارت «(بدون تأیید)» می‌آید. هیچ داده‌ای از دست نمی‌رود.\n\n**برای روشن‌کردن تأیید (یک بار):**\n۱. در تلگرام به `@get_id_bot` پیام بدهید و عدد `Your chat ID` را بردارید.\n۲. همان عدد را در شیت **تنظیمات** روبه‌روی کلید `تلگرام_چت_آیدی` بگذارید.\n۳. یک بار به ربات خودتان `/start` بزنید تا اجازهٔ پیام‌دادن داشته باشد.\n\nاز آن لحظه به بعد، هر ورودی اول در تلگرام برای تأیید می‌آید.\n\nاگر خواستید عمداً خاموش بماند، کلید `تلگرام_تأیید_لازم` را روی `خیر` بگذارید.",
+        "height": 400,
+        "width": 620,
+        "color": 3
+      },
+      "id": "72d35ef9-43b0-45ce-bed1-6e04e45e323a",
+      "name": "Sticky Note 3d973158",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## چه اتفاقی می‌افتد\n\nوبهوک بلافاصله جواب ۲۰۰ می‌دهد (فرستنده معطل نمی‌ماند)، بعد پیام تأیید به تلگرام شما می‌رود.\n\n**✅ ثبت کن** → ردیف در شیت درآمد یا هزینه‌ها نوشته و پیام تأیید فرستاده می‌شود.\n\n**❌ رد کن** یا **۲ روز بی‌پاسخ** → چیزی در شیت‌های مالی نوشته نمی‌شود؛ فقط در «لاگ_ورودی» بایگانی می‌شود.\n\nدکمه‌ها داخل خود چت تلگرام‌اند — لازم نیست مرورگر باز کنید.",
+        "height": 300,
+        "width": 900,
+        "color": 6
+      },
+      "id": "aedd66b6-d49a-4391-8633-001ab8c1d14f",
+      "name": "Sticky Note 442c467f",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "آموزشگاه علمی فردا",
+        "formDescription": "<b>ثبت واریزی</b> — شهریهٔ فراگیر، پرداخت مدرسه یا مجموعهٔ همکار، پرداخت سفارش‌دهندهٔ پروژه، و هر ورودی مالی دیگر.<br>فیلدهای ستاره‌دار (<b>*</b>) اجباری‌اند؛ تا پرشان نکنید فرم ارسال نمی‌شود.<br>خلاصهٔ رکورد برای تأیید به تلگرام شما می‌آید و تا دکمه «ثبت کن» را نزنید در گوگل‌شیت نوشته نمی‌شود.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "پرداخت‌کننده چه کسی است؟",
+              "fieldType": "radio",
+              "fieldName": "پرداخت_کننده_نوع",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "فراگیر"
+                  },
+                  {
+                    "option": "مدرسه یا سازمان"
+                  },
+                  {
+                    "option": "مجموعه همکار"
+                  },
+                  {
+                    "option": "سفارش‌دهندهٔ پروژه"
+                  },
+                  {
+                    "option": "سایر"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "نام پرداخت‌کننده",
+              "fieldName": "پرداخت_کننده",
+              "placeholder": "نام فراگیر، مدرسه، مجموعه یا سفارش‌دهنده",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "مبلغ (تومان)",
+              "fieldName": "مبلغ",
+              "placeholder": "مثلاً 20.000.000 یا 20000000",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "نوع پرداخت",
+              "fieldType": "dropdown",
+              "fieldName": "نوع_پرداخت",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "پرداخت یکجا"
+                  },
+                  {
+                    "option": "پیش‌پرداخت"
+                  },
+                  {
+                    "option": "پس‌پرداخت"
+                  },
+                  {
+                    "option": "پرداخت ماهانه"
+                  },
+                  {
+                    "option": "پرداخت قسطی"
+                  },
+                  {
+                    "option": "سایر"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "تاریخ پرداخت",
+              "fieldType": "date",
+              "fieldName": "تاریخ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "دوره / درس",
+              "fieldName": "کلاس",
+              "placeholder": "کد یا نام دوره — اگر دوره‌ای ندارد بنویسید: ندارد",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "نام مدرس این دوره",
+              "fieldName": "نام_مدرس",
+              "placeholder": "اگر دوره در شیت «کلاس‌ها» ثبت شده، خالی بگذارید"
+            },
+            {
+              "fieldLabel": "درصد مدرس از این پرداخت",
+              "fieldType": "number",
+              "fieldName": "درصد_مدرس",
+              "placeholder": "مثلاً 70 — خالی = درصد ثبت‌شدهٔ همان دوره یا مدرس"
+            },
+            {
+              "fieldLabel": "روش پرداخت",
+              "fieldType": "dropdown",
+              "fieldName": "روش_پرداخت",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "کارت به کارت"
+                  },
+                  {
+                    "option": "نقدی"
+                  },
+                  {
+                    "option": "دستگاه POS"
+                  },
+                  {
+                    "option": "درگاه اینترنتی"
+                  },
+                  {
+                    "option": "چک"
+                  },
+                  {
+                    "option": "سایر"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "شماره فیش / شناسه پرداخت",
+              "fieldName": "شماره_پیگیری",
+              "placeholder": "شماره پیگیری یا شناسه واریز"
+            },
+            {
+              "fieldLabel": "عکس یا PDF فیش",
+              "fieldType": "file",
+              "fieldName": "فاکتور",
+              "acceptFileTypes": ".jpg,.jpeg,.png,.webp,.heic,.pdf"
+            },
+            {
+              "fieldLabel": "ثبت‌کننده (نام شما)",
+              "fieldName": "ثبت_کننده",
+              "placeholder": "چه کسی دارد این را ثبت می‌کند؟",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "توضیح",
+              "fieldType": "textarea",
+              "fieldName": "توضیح"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "ارسال برای تأیید",
+          "path": "daramad-farda",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "واریزی دریافت شد. خلاصه‌اش برای تأیید به تلگرام شما رفت — با زدن «ثبت کن» در شیت «درآمد» نوشته می‌شود."
+            }
+          },
+          "ignoreBots": true,
+          "useWorkflowTimezone": true
+        }
+      },
+      "id": "6a89cc69-fa06-44f6-86fc-aeaeb954680a",
+      "name": "فرم واریزی",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -2400,
+        160
+      ],
+      "webhookId": "b65f73eb-a6f3-4777-9d6f-4e20d17d9fa0",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "0cwVTJ8y21vOBR7T",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.hasFile }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              }
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "49f2e9dd-589e-4c15-b622-9b52f94d0f03",
+      "name": "فایل دارد؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1904,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function pad(n){return String(n).length<2?'0'+n:String(n);}\nconst d = new Date();\nconst stamp = d.toISOString().slice(0,10) + '-' + pad(d.getHours()) + pad(d.getMinutes());\nconst out = [];\nconst items = $input.all();\nfor (let i = 0; i < items.length; i++) {\n  const bin = items[i].binary || {};\n  const keys = Object.keys(bin);\n  for (let k = 0; k < keys.length; k++) {\n    const b = bin[keys[k]];\n    const ext = b.fileExtension ? ('.' + b.fileExtension) : '';\n    const original = b.fileName || ('فاکتور' + ext);\n    out.push({\n      json: {\n        hasFile: true,\n        fileName: 'فردا-' + stamp + '-' + (out.length + 1) + '-' + original,\n        mimeType: b.mimeType || 'application/octet-stream',\n      },\n      binary: { data: b },\n    });\n  }\n}\nif (!out.length) return [{ json: { hasFile: false } }];\nreturn out;"
+      },
+      "id": "b17da25f-5e04-4283-8792-2fa1559f3846",
+      "name": "تفکیک فایل‌ها",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2128,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/drive/v3/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "{\"uploadType\":\"media\",\"fields\":\"id\"}",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "b49525dc-0cc2-4a97-a294-234d51af9161",
+      "name": "آپلود فاکتور به درایو",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1680,
+        192
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://www.googleapis.com/drive/v3/files/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "{\"addParents\":\"1h31yKvb7n6-QMZv-VnSoSoN7rvgVbKjs\",\"removeParents\":\"root\",\"fields\":\"id,name,webViewLink\"}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ name: $('تفکیک فایل‌ها').item.json.fileName }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "b4abecc5-4384-4a28-b029-6991f0bc2133",
+      "name": "نام‌گذاری فاکتور",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1456,
+        192
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const links = [];\nconst items = $input.all();\nfor (let i = 0; i < items.length; i++) {\n  const j = items[i].json || {};\n  if (j.webViewLink) links.push(String(j.webViewLink));\n}\nreturn [{ json: { links: links, linkText: links.join(' | '), count: links.length } }];"
+      },
+      "id": "ff10f889-7213-47e6-800f-6141a18aab7b",
+      "name": "جمع لینک فاکتورها",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1248,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $('نرمال‌سازی ورودی وبهوک').first().json.hasChat }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              }
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "db2d6c80-43db-41e1-b50d-92f75d2e91ca",
+      "name": "تلگرام تنظیم شده؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1264,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## دو لینک ورودی\n\n**واریزی:**\n`https://arezoo000.app.n8n.cloud/form/daramad-farda`\n\n**هزینه:**\n`https://arezoo000.app.n8n.cloud/form/hazine-farda`\n\nهر دو فرم عکس یا PDF می‌گیرند (چند تا هم اشکالی ندارد). فایل در پوشهٔ **فاکتورها و رسیدهای آموزشگاه فردا** در گوگل‌درایو ذخیره می‌شود و لینکش در ستون `لینک_فاکتور` می‌نشیند.\n\nفیلدهای ستاره‌دار را خود فرم اجباری می‌کند — تا پر نشوند دکمهٔ ارسال کار نمی‌کند و پیامی هم به تلگرام نمی‌رود.\n\nاگر آپلود شکست بخورد، رکورد مالی باز هم ثبت می‌شود — فقط ستون لینک خالی می‌ماند.",
+        "height": 516,
+        "width": 1532,
+        "color": 5
+      },
+      "id": "0987d17c-c887-495b-8372-4059cef824aa",
+      "name": "Sticky Note فایل",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2848,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "آموزشگاه علمی فردا",
+        "formDescription": "<b>ثبت هزینه</b> — اجاره، قبوض، تبلیغات، هوش مصنوعی، پشتیبانی ایجنت، شارژ ساختمان، پاداش و هر خرج دیگر آموزشگاه.<br>فیلدهای ستاره‌دار (<b>*</b>) اجباری‌اند. اگر دستهٔ «سایر» را انتخاب کردید، در «شرح هزینه» دقیق بنویسید چه بوده.<br>⚠️ حقوق مدرسین را اینجا ثبت <b>نکنید</b> — خودکار از روی واریزی‌ها محاسبه می‌شود.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "دسته هزینه",
+              "fieldType": "dropdown",
+              "fieldName": "دسته",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "اجاره"
+                  },
+                  {
+                    "option": "قبوض (برق، آب، گاز)"
+                  },
+                  {
+                    "option": "اینترنت و تلفن"
+                  },
+                  {
+                    "option": "شارژ ساختمان"
+                  },
+                  {
+                    "option": "تبلیغات و بازاریابی"
+                  },
+                  {
+                    "option": "لوازم مصرفی و اداری"
+                  },
+                  {
+                    "option": "تعمیر و نگهداری"
+                  },
+                  {
+                    "option": "حقوق پرسنل اداری"
+                  },
+                  {
+                    "option": "پاداش"
+                  },
+                  {
+                    "option": "هوش مصنوعی"
+                  },
+                  {
+                    "option": "پشتیبانی ایجنت و موارد مرتبط"
+                  },
+                  {
+                    "option": "ایاب و ذهاب"
+                  },
+                  {
+                    "option": "پذیرایی"
+                  },
+                  {
+                    "option": "مالیات و عوارض"
+                  },
+                  {
+                    "option": "کارمزد بانکی"
+                  },
+                  {
+                    "option": "سایر"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "مبلغ (تومان)",
+              "fieldName": "مبلغ",
+              "placeholder": "مثلاً 12.000.000 یا 12000000",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "تاریخ پرداخت",
+              "fieldType": "date",
+              "fieldName": "تاریخ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "شرح هزینه",
+              "fieldName": "شرح",
+              "placeholder": "دقیق بنویسید چه بوده — اگر دسته «سایر» است، این حتماً باید روشن باشد",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "طرف حساب / فروشنده",
+              "fieldName": "طرف_حساب",
+              "placeholder": "به کی پرداخت شد؟"
+            },
+            {
+              "fieldLabel": "روش پرداخت",
+              "fieldType": "dropdown",
+              "fieldName": "روش_پرداخت",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "کارت به کارت"
+                  },
+                  {
+                    "option": "نقدی"
+                  },
+                  {
+                    "option": "دستگاه POS"
+                  },
+                  {
+                    "option": "درگاه اینترنتی"
+                  },
+                  {
+                    "option": "چک"
+                  },
+                  {
+                    "option": "سایر"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "شماره فیش / پیگیری",
+              "fieldName": "شماره_پیگیری"
+            },
+            {
+              "fieldLabel": "عکس یا PDF فاکتور",
+              "fieldType": "file",
+              "fieldName": "فاکتور",
+              "acceptFileTypes": ".jpg,.jpeg,.png,.webp,.heic,.pdf"
+            },
+            {
+              "fieldLabel": "ثبت‌کننده (نام شما)",
+              "fieldName": "ثبت_کننده",
+              "placeholder": "چه کسی دارد این را ثبت می‌کند؟",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "توضیح",
+              "fieldType": "textarea",
+              "fieldName": "توضیح"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "ارسال برای تأیید",
+          "path": "hazine-farda",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "هزینه دریافت شد. خلاصه‌اش برای تأیید به تلگرام شما رفت — با زدن «ثبت کن» در شیت «هزینه‌ها» نوشته می‌شود."
+            }
+          },
+          "ignoreBots": true,
+          "useWorkflowTimezone": true
+        }
+      },
+      "id": "3d91c095-4c0f-4106-bf14-ed51a00e701e",
+      "name": "فرم هزینه",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -2400,
+        400
+      ],
+      "webhookId": "4cbeca86-8c3e-4bf2-b523-aeda980bc48c",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "0cwVTJ8y21vOBR7T",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": "486168317"
+        },
+        "options": {}
+      },
+      "id": "10478f0e-f02e-4fe6-836d-1d461407857e",
+      "name": "مدرسین",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -656,
+        0
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "آموزشگاه علمی فردا",
+        "formDescription": "چه چیزی می‌خواهید ثبت کنید؟ یکی را انتخاب کنید تا فرم مخصوص همان مورد باز شود.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "نوع رکورد",
+              "fieldType": "radio",
+              "fieldName": "نوع_ثبت",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "درآمد — پولی که وارد شده"
+                  },
+                  {
+                    "option": "هزینه — پولی که خرج شده"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "ادامه",
+          "path": "farda",
+          "ignoreBots": true,
+          "useWorkflowTimezone": true
+        }
+      },
+      "id": "76d68f64-8ac0-41bf-8d5d-0244f0904004",
+      "name": "فرم انتخاب",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -2400,
+        -160
+      ],
+      "webhookId": "e4bb647b-ef7c-4a45-a855-4ba7106c65bb",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "0cwVTJ8y21vOBR7T",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json[\"نوع_ثبت\"] }}",
+                    "operator": {
+                      "operation": "contains",
+                      "type": "string"
+                    },
+                    "rightValue": "درآمد"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              }
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json[\"نوع_ثبت\"] }}",
+                    "operator": {
+                      "operation": "contains",
+                      "type": "string"
+                    },
+                    "rightValue": "هزینه"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                }
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ab934fa3-d489-45b4-bba7-4e9985e26586",
+      "name": "مسیر انتخاب",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -2160,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "redirect",
+        "redirectUrl": "https://arezoo000.app.n8n.cloud/form/daramad-farda",
+        "options": {}
+      },
+      "id": "1035f017-b72e-4fd9-867e-bd20c1bfa375",
+      "name": "برو به فرم واریزی",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -1920,
+        -256
+      ],
+      "webhookId": "8034cc82-ffc3-4a9c-978b-271d9fc04005"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "redirect",
+        "redirectUrl": "https://arezoo000.app.n8n.cloud/form/hazine-farda",
+        "options": {}
+      },
+      "id": "d2556df6-292a-4bdd-a773-92dc977c9b69",
+      "name": "برو به فرم هزینه",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -1920,
+        -64
+      ],
+      "webhookId": "f290b05d-1f2c-496d-9637-a87f3d8e78ba"
+    }
+  ],
+  "connections": {
+    "وبهوک ورودی": {
+      "main": [
+        [
+          {
+            "node": "تنظیمات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تنظیمات": {
+      "main": [
+        [
+          {
+            "node": "کلاس‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "نرمال‌سازی ورودی وبهوک": {
+      "main": [
+        [
+          {
+            "node": "داده معتبر است؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "داده معتبر است؟": {
+      "main": [
+        [
+          {
+            "node": "تأیید لازم است؟",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ثبت خطا در لاگ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تأیید لازم است؟": {
+      "main": [
+        [
+          {
+            "node": "تأیید در تلگرام",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "بازیابی ردیف",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تأیید در تلگرام": {
+      "main": [
+        [
+          {
+            "node": "تأیید شد؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تأیید شد؟": {
+      "main": [
+        [
+          {
+            "node": "بازیابی ردیف",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ثبت رد در لاگ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "بازیابی ردیف": {
+      "main": [
+        [
+          {
+            "node": "هزینه است؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت رد در لاگ": {
+      "main": [
+        [
+          {
+            "node": "پیام رد شد",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت خطا در لاگ": {
+      "main": [
+        [
+          {
+            "node": "پیام خطا",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "هزینه است؟": {
+      "main": [
+        [
+          {
+            "node": "ثبت هزینه",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ثبت درآمد",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "آپلود فاکتور به درایو": {
+      "main": [
+        [
+          {
+            "node": "نام‌گذاری فاکتور",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "نام‌گذاری فاکتور": {
+      "main": [
+        [
+          {
+            "node": "جمع لینک فاکتورها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "جمع لینک فاکتورها": {
+      "main": [
+        [
+          {
+            "node": "تنظیمات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت هزینه": {
+      "main": [
+        [
+          {
+            "node": "تلگرام تنظیم شده؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت درآمد": {
+      "main": [
+        [
+          {
+            "node": "تلگرام تنظیم شده؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تلگرام تنظیم شده؟": {
+      "main": [
+        [
+          {
+            "node": "پیام ثبت شد",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تفکیک فایل‌ها": {
+      "main": [
+        [
+          {
+            "node": "فایل دارد؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "فایل دارد؟": {
+      "main": [
+        [
+          {
+            "node": "آپلود فاکتور به درایو",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "تنظیمات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "فرم واریزی": {
+      "main": [
+        [
+          {
+            "node": "تفکیک فایل‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "فرم هزینه": {
+      "main": [
+        [
+          {
+            "node": "تفکیک فایل‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "کلاس‌ها": {
+      "main": [
+        [
+          {
+            "node": "مدرسین",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "مدرسین": {
+      "main": [
+        [
+          {
+            "node": "نرمال‌سازی ورودی وبهوک",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "فرم انتخاب": {
+      "main": [
+        [
+          {
+            "node": "مسیر انتخاب",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "مسیر انتخاب": {
+      "main": [
+        [
+          {
+            "node": "برو به فرم واریزی",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "برو به فرم هزینه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Asia/Tehran",
+    "saveDataErrorExecution": "all",
+    "binaryMode": "separate"
+  }
+}

@@ -1,0 +1,868 @@
+{
+  "id": "Hl2ABCF6U7Z0lZZI",
+  "name": "۰۲ | پروژه حسابداری آموزشگاه : واردات دسته‌ای از فایل اکسل",
+  "description": "فایل اکسل را یا در فرم آپلود کنید یا به ایمیل بفرستید. ستون‌ها با فرهنگ مترادف‌ها به‌طور خودکار شناسایی، تاریخ شمسی/میلادی/سریال اکسل تبدیل، ردیف‌ها اعتبارسنجی و در شیت درست ثبت می‌شوند.",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "واردات اکسل — آموزشگاه علمی فردا",
+        "formDescription": "فایل اکسل خود را بگذارید. لازم نیست ستون‌ها دقیقاً هم‌نام باشند؛ سیستم خودش نام‌های رایج را می‌شناسد.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "این فایل شامل چیست؟",
+              "fieldType": "radio",
+              "fieldName": "نوع_داده",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "درآمد"
+                  },
+                  {
+                    "option": "هزینه"
+                  },
+                  {
+                    "option": "جلسات تدریس"
+                  },
+                  {
+                    "option": "آورده سرمایه"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "فایل اکسل (xlsx)",
+              "fieldType": "file",
+              "fieldName": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".xlsx",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "واردات",
+          "path": "excel-r3p6w5",
+          "ignoreBots": true,
+          "useWorkflowTimezone": true
+        }
+      },
+      "id": "f70984eb-44e3-49e8-8837-b8b6e86152e9",
+      "name": "آپلود فایل اکسل",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -1344,
+        -224
+      ],
+      "webhookId": "ca3daa3e-de41-44b8-ba3b-fc6ef274a5bc"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "file",
+        "options": {
+          "headerRow": true,
+          "includeEmptyCells": true,
+          "readAsString": false
+        }
+      },
+      "id": "82ef1b34-9fca-4cb9-a554-576e0dac619b",
+      "name": "استخراج از فایل فرم",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1104,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1854744989",
+          "cachedResultName": "تنظیمات"
+        },
+        "options": {}
+      },
+      "id": "df106d69-4f0a-490a-b4c3-d90912bb7b30",
+      "name": "تنظیمات",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -864,
+        -48
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 15,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "simple": false,
+        "maxResults": 5,
+        "filters": {
+          "q": "has:attachment subject:حسابداری",
+          "readStatus": "unread"
+        },
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "attachment_",
+          "downloadAttachments": true
+        }
+      },
+      "id": "f681187c-4c7c-4af1-81e7-eb2c5b8ee420",
+      "name": "ایمیل با پیوست اکسل",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1344,
+        128
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9l03U9CEPtF3aNzm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "attachment_0",
+        "options": {
+          "headerRow": true,
+          "includeEmptyCells": true,
+          "readAsString": false
+        }
+      },
+      "id": "c1d9d30f-5f8f-4e7f-acb2-9d2218b763b2",
+      "name": "استخراج از پیوست ایمیل",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1104,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "486168317",
+          "cachedResultName": "مدرسین"
+        },
+        "options": {}
+      },
+      "id": "0efe3ed5-3831-4bc9-95d1-2817420e7360",
+      "name": "مدرسین",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -656,
+        -48
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "337802420",
+          "cachedResultName": "کلاس‌ها"
+        },
+        "options": {}
+      },
+      "id": "46ccc3aa-5063-4b3e-9497-8eb0255fdc9f",
+      "name": "کلاس‌ها",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -464,
+        -48
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1961762436",
+          "cachedResultName": "سرمایه‌گذاران"
+        },
+        "options": {}
+      },
+      "id": "be8cd605-fc9d-4c31-8b9b-59fe0b30e3e1",
+      "name": "سرمایه‌گذاران",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -256,
+        -48
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function div(a,b){return ~~(a/b);}\nfunction mod(a,b){return a-~~(a/b)*b;}\nfunction jalCal(jy){var bk=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178],bl=bk.length,gy=jy+621,leapJ=-14,jp=bk[0],jm,jump=0,leap,n,i;if(jy<jp||jy>=bk[bl-1])throw new Error('سال شمسی نامعتبر');for(i=1;i<bl;i++){jm=bk[i];jump=jm-jp;if(jy<jm)break;leapJ=leapJ+div(jump,33)*8+div(mod(jump,33),4);jp=jm;}n=jy-jp;leapJ=leapJ+div(n,33)*8+div(mod(n,33)+3,4);if(mod(jump,33)===4&&jump-n===4)leapJ+=1;var leapG=div(gy,4)-div((div(gy,100)+1)*3,4)-150,march=20+leapJ-leapG;if(jump-n<6)n=n-jump+div(jump+4,33)*33;leap=mod(mod(n+1,33)-1,4);if(leap===-1)leap=4;return{leap:leap,gy:gy,march:march};}\nfunction g2d(gy,gm,gd){var d=div((gy+div(gm-8,6)+100100)*1461,4)+div(153*mod(gm+9,12)+2,5)+gd-34840408;d=d-div(div(gy+100100+div(gm-8,6),100)*3,4)+752;return d;}\nfunction d2g(jdn){var j=4*jdn+139361631;j=j+div(div(4*jdn+183187720,146097)*3,4)*4-3908;var i=div(mod(j,1461),4)*5+308,gd=div(mod(i,153),5)+1,gm=mod(div(i,153),12)+1,gy=div(j,1461)-100100+div(8-gm,6);return{gy:gy,gm:gm,gd:gd};}\nfunction d2j(jdn){var gy=d2g(jdn).gy,jy=gy-621,r=jalCal(jy),jdn1f=g2d(gy,3,r.march),k=jdn-jdn1f,jm,jd;if(k>=0){if(k<=185){jm=1+div(k,31);jd=mod(k,31)+1;return{jy:jy,jm:jm,jd:jd};}k-=186;}else{jy-=1;k+=179;if(r.leap===1)k+=1;}jm=7+div(k,30);jd=mod(k,30)+1;return{jy:jy,jm:jm,jd:jd};}\nfunction j2d(jy,jm,jd){var r=jalCal(jy);return g2d(r.gy,3,r.march)+(jm-1)*31-div(jm,7)*(jm-7)+jd-1;}\nfunction pad(n){return String(n).length<2?'0'+n:String(n);}\nfunction toJfromISO(iso){var p=String(iso).slice(0,10).split('-');return d2j(g2d(+p[0],+p[1],+p[2]));}\nfunction jToISO(jy,jm,jd){var g=d2g(j2d(jy,jm,jd));return g.gy+'-'+pad(g.gm)+'-'+pad(g.gd);}\nfunction fa2en(s){return String(s==null?'':s).replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d);}).replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d);});}\nfunction toNum(v){var s=fa2en(v).replace(/[^0-9.\\-]/g,'');var n=Number(s);return Number.isFinite(n)?n:0;}\n\nfunction parseDate(v, todayISO) {\n  if (v === null || v === undefined || v === '') return { iso: todayISO, guessed: true };\n  if (v instanceof Date && !isNaN(v.getTime())) {\n    return { iso: v.toISOString().slice(0, 10), guessed: false };\n  }\n  const raw = fa2en(v).trim();\n  const serial = Number(raw);\n  if (raw !== '' && Number.isFinite(serial) && serial > 20000 && serial < 80000 && raw.indexOf('/') < 0 && raw.indexOf('-') < 0) {\n    const ms = Math.round((serial - 25569) * 86400000);\n    return { iso: new Date(ms).toISOString().slice(0, 10), guessed: false };\n  }\n  const parts = raw.split(/[\\/\\-\\.]/).map(function (x) { return parseInt(x, 10); });\n  if (parts.length >= 3 && parts.every(function (n) { return Number.isFinite(n); })) {\n    if (parts[0] > 1600) return { iso: parts[0] + '-' + pad(parts[1]) + '-' + pad(parts[2]), guessed: false };\n    if (parts[0] > 1200 && parts[0] < 1600) return { iso: jToISO(parts[0], parts[1], parts[2]), guessed: false };\n  }\n  const d = new Date(raw);\n  if (!isNaN(d.getTime())) return { iso: d.toISOString().slice(0, 10), guessed: false };\n  return { iso: todayISO, guessed: true };\n}\n\nconst SYN = {\n  date: ['تاریخ', 'تاريخ', 'تاریخ_شمسی', 'تاریخ شمسی', 'تاریخ میلادی', 'روز', 'date', 'Date'],\n  amount: ['مبلغ', 'مبلغ (تومان)', 'مبلغ تومان', 'قیمت', 'بها', 'جمع', 'جمع کل', 'amount', 'Amount', 'price', 'total', 'مبلغ_تومان', 'ارزش'],\n  desc: ['شرح', 'شرح هزینه', 'توضیح', 'توضیحات', 'بابت', 'عنوان', 'description', 'Description', 'شرح_آورده'],\n  category: ['دسته', 'دسته هزینه', 'دسته_هزینه', 'گروه', 'category', 'Category', 'نوع هزینه'],\n  payer: ['پرداخت کننده', 'پرداخت_کننده', 'نام شاگرد', 'شاگرد', 'نام', 'مشتری', 'payer', 'name', 'دانش آموز'],\n  klass: ['کلاس', 'نام کلاس', 'نام_کلاس', 'کد کلاس', 'کد_کلاس', 'class', 'دوره'],\n  teacher: ['مدرس', 'نام مدرس', 'نام_مدرس', 'کد مدرس', 'کد_مدرس', 'استاد', 'teacher'],\n  ktype: ['نوع کلاس', 'نوع_کلاس', 'نوع', 'type', 'حضوری/آنلاین'],\n  sessions: ['تعداد جلسه', 'تعداد_جلسه', 'جلسه', 'تعداد جلسات', 'sessions'],\n  students: ['تعداد شاگرد', 'تعداد_شاگرد', 'شاگرد', 'نفرات', 'تعداد نفرات', 'students'],\n  percent: ['درصد', 'درصد مدرس', 'درصد_مدرس', 'سهم', 'percent'],\n  paymethod: ['روش پرداخت', 'روش_پرداخت', 'نحوه پرداخت', 'payment'],\n  investor: ['سرمایه گذار', 'سرمایه‌گذار', 'نام سرمایه گذار', 'نام_سرمایه_گذار', 'کد سرمایه گذار', 'کد_سرمایه_گذار', 'investor'],\n  ctype: ['نوع آورده', 'نوع_آورده'],\n  incomeType: ['نوع درآمد', 'نوع_درآمد', 'منبع'],\n  ref: ['شماره پیگیری', 'شماره_پیگیری', 'کد رهگیری', 'reference'],\n  counterparty: ['طرف حساب', 'طرف_حساب', 'فروشنده', 'موجر', 'تامین کننده'],\n};\n\nfunction pick(row, key) {\n  const names = SYN[key] || [];\n  const keys = Object.keys(row);\n  for (let i = 0; i < names.length; i++) {\n    for (let k = 0; k < keys.length; k++) {\n      if (String(keys[k]).trim() === names[i]) return row[keys[k]];\n    }\n  }\n  for (let i = 0; i < names.length; i++) {\n    for (let k = 0; k < keys.length; k++) {\n      const kk = String(keys[k]).trim();\n      if (kk.indexOf(names[i]) >= 0 || names[i].indexOf(kk) >= 0) return row[keys[k]];\n    }\n  }\n  return undefined;\n}\n\nfunction safeRows(name) { try { return $(name).all().map(function (i) { return i.json || {}; }); } catch (e) { return []; } }\n\nlet raw = [];\nlet source = '';\nlet declaredType = '';\ntry {\n  raw = $('استخراج از فایل فرم').all().map(function (i) { return i.json || {}; });\n  source = 'اکسل-فرم';\n  declaredType = String($('آپلود فایل اکسل').first().json['نوع_داده'] || '');\n} catch (e) { raw = []; }\n\nif (!raw.length) {\n  try {\n    raw = $('استخراج از پیوست ایمیل').all().map(function (i) { return i.json || {}; });\n    source = 'اکسل-ایمیل';\n    const subj = String($('ایمیل با پیوست اکسل').first().json.subject || '');\n    if (subj.indexOf('درآمد') >= 0) declaredType = 'درآمد';\n    else if (subj.indexOf('هزینه') >= 0) declaredType = 'هزینه';\n    else if (subj.indexOf('تدریس') >= 0 || subj.indexOf('جلسه') >= 0) declaredType = 'جلسات تدریس';\n    else if (subj.indexOf('سرمایه') >= 0 || subj.indexOf('آورده') >= 0) declaredType = 'آورده سرمایه';\n  } catch (e) { raw = []; }\n}\n\nraw = raw.filter(function (r) {\n  const vals = Object.keys(r).map(function (k) { return r[k]; });\n  return vals.some(function (v) { return v !== '' && v !== null && v !== undefined; });\n});\n\nif (!declaredType && raw.length) {\n  const probe = raw[0];\n  if (pick(probe, 'category') !== undefined) declaredType = 'هزینه';\n  else if (pick(probe, 'sessions') !== undefined || pick(probe, 'klass') !== undefined) declaredType = 'جلسات تدریس';\n  else if (pick(probe, 'investor') !== undefined) declaredType = 'آورده سرمایه';\n  else declaredType = 'درآمد';\n}\n\nconst settings = {};\nsafeRows('تنظیمات').forEach(function (r) { if (r['کلید']) settings[String(r['کلید']).trim()] = r['مقدار']; });\nconst teachers = safeRows('مدرسین').filter(function (r) { return r['کد_مدرس']; });\nconst classes = safeRows('کلاس‌ها').filter(function (r) { return r['کد_کلاس']; });\nconst investors = safeRows('سرمایه‌گذاران').filter(function (r) { return r['کد_سرمایه_گذار']; });\n\nconst todayISO = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Tehran' });\nconst now = new Date().toISOString();\nconst stamp = Date.now().toString(36).slice(-4).toUpperCase();\n\nfunction findClass(v) {\n  const s = String(v == null ? '' : v).trim();\n  if (!s) return {};\n  const code = s.indexOf(' — ') > 0 ? s.split(' — ')[0] : s;\n  let hit = classes.filter(function (c) { return String(c['کد_کلاس']).trim() === code; })[0];\n  if (!hit) hit = classes.filter(function (c) { return String(c['نام_کلاس']).trim() === s; })[0];\n  if (!hit) hit = classes.filter(function (c) { return s.indexOf(String(c['نام_کلاس']).trim()) >= 0; })[0];\n  return hit || {};\n}\nfunction findTeacher(v, fallbackCode) {\n  const s = String(v == null ? '' : v).trim();\n  let hit = null;\n  if (s) {\n    hit = teachers.filter(function (t) { return String(t['کد_مدرس']).trim() === s || String(t['نام_مدرس']).trim() === s; })[0];\n  }\n  if (!hit && fallbackCode) {\n    hit = teachers.filter(function (t) { return String(t['کد_مدرس']).trim() === String(fallbackCode).trim(); })[0];\n  }\n  return hit || {};\n}\nfunction findInvestor(v) {\n  const s = String(v == null ? '' : v).trim();\n  if (!s) return {};\n  const code = s.indexOf(' — ') > 0 ? s.split(' — ')[0] : s;\n  let hit = investors.filter(function (i) { return String(i['کد_سرمایه_گذار']).trim() === code; })[0];\n  if (!hit) hit = investors.filter(function (i) { return String(i['نام_سرمایه_گذار']).trim() === s; })[0];\n  return hit || {};\n}\n\nconst out = [];\nlet ok = 0;\nlet bad = 0;\nconst problems = [];\n\nraw.forEach(function (r, index) {\n  const rowNo = index + 2;\n  const dt = parseDate(pick(r, 'date'), todayISO);\n  const j = toJfromISO(dt.iso);\n  const shamsi = j.jy + '/' + pad(j.jm) + '/' + pad(j.jd);\n  const amount = toNum(pick(r, 'amount'));\n  const note = (dt.guessed ? 'تاریخ خوانده نشد — امروز ثبت شد. ' : '') + String(pick(r, 'desc') || '');\n\n  if (declaredType === 'هزینه') {\n    if (amount <= 0) { bad++; problems.push('ردیف ' + rowNo + ': مبلغ نامعتبر'); return; }\n    out.push({ json: {\n      _target: 'هزینه',\n      'شناسه': 'EX-' + j.jy + pad(j.jm) + '-X' + stamp + rowNo,\n      'تاریخ_شمسی': shamsi, 'تاریخ_میلادی': dt.iso, 'سال_شمسی': j.jy, 'ماه_شمسی': j.jm,\n      'دسته_هزینه': String(pick(r, 'category') || 'سایر'),\n      'شرح': String(pick(r, 'desc') || 'واردات اکسل'),\n      'مبلغ': amount,\n      'روش_پرداخت': String(pick(r, 'paymethod') || ''),\n      'طرف_حساب': String(pick(r, 'counterparty') || ''),\n      'نوع_هزینه': 'متغیر',\n      'توضیح': note,\n      'منبع': source,\n      'زمان_ثبت': now,\n    } });\n    ok++;\n    return;\n  }\n\n  if (declaredType === 'درآمد') {\n    if (amount <= 0) { bad++; problems.push('ردیف ' + rowNo + ': مبلغ نامعتبر'); return; }\n    const cls = findClass(pick(r, 'klass'));\n    out.push({ json: {\n      _target: 'درآمد',\n      'شناسه': 'IN-' + j.jy + pad(j.jm) + '-X' + stamp + rowNo,\n      'تاریخ_شمسی': shamsi, 'تاریخ_میلادی': dt.iso, 'سال_شمسی': j.jy, 'ماه_شمسی': j.jm,\n      'نوع_درآمد': String(pick(r, 'incomeType') || 'شهریه شاگرد'),\n      'پرداخت_کننده': String(pick(r, 'payer') || ''),\n      'کد_کلاس': cls['کد_کلاس'] || '',\n      'نام_کلاس': cls['نام_کلاس'] || '',\n      'کد_مدرس': cls['کد_مدرس'] || '',\n      'مبلغ': amount,\n      'روش_پرداخت': String(pick(r, 'paymethod') || ''),\n      'شماره_پیگیری': String(pick(r, 'ref') || ''),\n      'توضیح': note,\n      'منبع': source,\n      'زمان_ثبت': now,\n    } });\n    ok++;\n    return;\n  }\n\n  if (declaredType === 'جلسات تدریس') {\n    const cls = findClass(pick(r, 'klass'));\n    const teacher = findTeacher(pick(r, 'teacher'), cls['کد_مدرس']);\n    if (!cls['کد_کلاس'] && !teacher['کد_مدرس']) { bad++; problems.push('ردیف ' + rowNo + ': کلاس و مدرس شناسایی نشد'); return; }\n    const type = String(pick(r, 'ktype') || cls['نوع_کلاس'] || 'حضوری');\n    const isOnline = type.indexOf('آنلاین') >= 0;\n    const sessions = toNum(pick(r, 'sessions')) || 1;\n    const students = toNum(pick(r, 'students'));\n    let gross = amount;\n    if (!gross) {\n      const tuition = toNum(cls['شهریه_هر_نفر']);\n      const total = toNum(cls['تعداد_جلسات_دوره']);\n      gross = Math.round((total > 0 ? tuition / total : tuition) * students * sessions);\n    }\n    let pct = toNum(pick(r, 'percent'));\n    if (!pct) pct = toNum(cls['درصد_مدرس_اختصاصی']);\n    if (!pct) pct = isOnline ? toNum(teacher['درصد_آنلاین']) : toNum(teacher['درصد_حضوری']);\n    if (!pct) pct = isOnline ? (toNum(settings['درصد_پیشفرض_آنلاین']) || 60) : (toNum(settings['درصد_پیشفرض_حضوری']) || 70);\n    out.push({ json: {\n      _target: 'جلسات',\n      'شناسه': 'TS-' + j.jy + pad(j.jm) + '-X' + stamp + rowNo,\n      'تاریخ_شمسی': shamsi, 'تاریخ_میلادی': dt.iso, 'سال_شمسی': j.jy, 'ماه_شمسی': j.jm,\n      'کد_مدرس': teacher['کد_مدرس'] || cls['کد_مدرس'] || '',\n      'نام_مدرس': teacher['نام_مدرس'] || '',\n      'کد_کلاس': cls['کد_کلاس'] || '',\n      'نام_کلاس': cls['نام_کلاس'] || '',\n      'نوع_کلاس': type,\n      'تعداد_جلسه': sessions,\n      'تعداد_شاگرد': students,\n      'درآمد_ناخالص': gross,\n      'درصد_مدرس': pct,\n      'سهم_مدرس': Math.round(gross * pct / 100),\n      'وضعیت_تسویه': 'تسویه نشده',\n      'توضیح': note,\n      'منبع': source,\n      'زمان_ثبت': now,\n    } });\n    ok++;\n    return;\n  }\n\n  if (amount <= 0) { bad++; problems.push('ردیف ' + rowNo + ': مبلغ نامعتبر'); return; }\n  const inv = findInvestor(pick(r, 'investor'));\n  out.push({ json: {\n    _target: 'سرمایه',\n    'شناسه': 'CP-' + j.jy + pad(j.jm) + '-X' + stamp + rowNo,\n    'تاریخ_شمسی': shamsi, 'تاریخ_میلادی': dt.iso, 'سال_شمسی': j.jy, 'ماه_شمسی': j.jm,\n    'کد_سرمایه_گذار': inv['کد_سرمایه_گذار'] || '',\n    'نام_سرمایه_گذار': inv['نام_سرمایه_گذار'] || String(pick(r, 'investor') || ''),\n    'نوع_آورده': String(pick(r, 'ctype') || 'نقدی'),\n    'شرح_آورده': String(pick(r, 'desc') || ''),\n    'مبلغ_تومان': amount,\n    'نرخ_طلای18_روز': '',\n    'نرخ_دلار_روز': '',\n    'معادل_گرم_طلا': '',\n    'معادل_دلار': '',\n    'دسته': 'سرمایه اولیه (سال‌های قبل)',\n    'توضیح': note + ' [واردات اکسل — نرخ روز ثبت نشد، تعدیل با تورم رسمی]',\n    'منبع': source,\n    'زمان_ثبت': now,\n  } });\n  ok++;\n});\n\nif (!out.length) {\n  out.push({ json: {\n    _target: 'خطا',\n    'زمان': now,\n    'منبع': source || 'اکسل',\n    'نوع_رکورد': declaredType || 'نامشخص',\n    'شناسه_مرتبط': '',\n    'وضعیت': 'ناموفق',\n    'پیام': 'هیچ ردیف معتبری پیدا نشد. ' + problems.slice(0, 5).join(' | '),\n    'داده_خام': JSON.stringify(raw.slice(0, 3)),\n  } });\n}\n\nout.forEach(function (o) {\n  o.json._meta = { ok: ok, bad: bad, total: raw.length, type: declaredType, source: source, problems: problems.slice(0, 15) };\n});\n\nreturn out;"
+      },
+      "id": "3091d890-6a87-4533-9279-e7f7c92e8242",
+      "name": "نرمال‌سازی ردیف‌های اکسل",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json._target }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "درآمد"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json._target }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "هزینه"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json._target }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "جلسات"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json._target }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "سرمایه"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "نامعتبر"
+        }
+      },
+      "id": "9088d09e-5d38-4adf-bf54-9eb66c6c9a0c",
+      "name": "مسیر شیت مقصد",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        208,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1223345002",
+          "cachedResultName": "درآمد"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "e9dc6b19-680d-420e-96a6-c30282a3c874",
+      "name": "ثبت انبوه درآمد",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        -528
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const SHEET_URL = 'https://docs.google.com/spreadsheets/d/12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4/edit';\nconst meta = ($('نرمال‌سازی ردیف‌های اکسل').first().json._meta) || { ok: 0, bad: 0, total: 0, type: '', source: '', problems: [] };\n\nconst problemsHtml = (meta.problems || []).length\n  ? '<ul>' + meta.problems.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul>'\n  : '<div style=\"color:#137333\">همه ردیف‌ها سالم بودند.</div>';\n\nconst html = '<div dir=\"rtl\" style=\"font-family:Tahoma,Arial,sans-serif;font-size:14px;max-width:640px\">'\n  + '<h2 style=\"margin:0 0 10px\">نتیجه واردات فایل اکسل</h2>'\n  + '<table border=\"1\" cellpadding=\"7\" style=\"border-collapse:collapse;border-color:#dadce0;width:100%\">'\n  + '<tr><td>نوع داده</td><td><b>' + meta.type + '</b></td></tr>'\n  + '<tr><td>منبع</td><td>' + meta.source + '</td></tr>'\n  + '<tr><td>ردیف‌های فایل</td><td>' + meta.total + '</td></tr>'\n  + '<tr><td>ثبت‌شده</td><td style=\"color:#137333\"><b>' + meta.ok + '</b></td></tr>'\n  + '<tr><td>رد شده</td><td style=\"color:#c5221f\"><b>' + meta.bad + '</b></td></tr>'\n  + '</table>'\n  + '<h3 style=\"margin:16px 0 6px\">ردیف‌های مشکل‌دار</h3>' + problemsHtml\n  + '<p><a href=\"' + SHEET_URL + '\" style=\"background:#1a73e8;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;display:inline-block\">باز کردن دفتر حسابداری</a></p>'\n  + '</div>';\n\nconst text = 'واردات ' + meta.type + ': ' + meta.ok + ' ردیف ثبت شد، ' + meta.bad + ' ردیف رد شد (از ' + meta.total + ' ردیف).';\n\nreturn [{ json: { ok: meta.ok, bad: meta.bad, total: meta.total, type: meta.type, html: html, پیام: text } }];"
+      },
+      "id": "aaea5e28-409d-483a-9f1b-012e85d17ef9",
+      "name": "خلاصه واردات",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "226026858",
+          "cachedResultName": "هزینه‌ها"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "08584449-3907-4c2d-a28e-a8e9f054e368",
+      "name": "ثبت انبوه هزینه",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        -288
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1908843345",
+          "cachedResultName": "جلسات_تدریس"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "a5f00b1d-6760-4bc2-8b7e-a6f09e1b8f3b",
+      "name": "ثبت انبوه جلسات تدریس",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        -64
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1019742628",
+          "cachedResultName": "آورده_سرمایه"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "451c4ecc-54d2-4355-844d-99fe6da0829f",
+      "name": "ثبت انبوه آورده سرمایه",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        176
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1430613514",
+          "cachedResultName": "لاگ_ورودی"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "409c67ff-40b3-4e99-b851-19f33ecf8ef0",
+      "name": "ثبت خطای واردات",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "f.shams.apg@gmail.com",
+        "subject": "=نتیجه واردات اکسل — {{ $json.ok }} ردیف ثبت شد",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "حسابداری آموزشگاه فردا"
+        }
+      },
+      "id": "92e9f209-ac96-481a-aef2-1570e56c6cef",
+      "name": "اطلاع نتیجه واردات",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        -48
+      ],
+      "webhookId": "24fcc0d8-3db0-455b-bc28-9df74694b259",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9l03U9CEPtF3aNzm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## دو راه فرستادن اکسل\n\n**۱) فرم آپلود** — لینک Production نود «آپلود فایل اکسل» (مسیر `/form/excel-farda`). نوع داده را انتخاب و فایل را بگذارید.\n\n**۲) ایمیل** — فایل را به همین جیمیل بفرستید و در **موضوع** کلمه «حسابداری» را بیاورید، به‌علاوه یکی از کلمات: درآمد / هزینه / تدریس / سرمایه. هر ۱۵ دقیقه چک می‌شود.\n\nفقط فایل `.xlsx` — اگر فایل قدیمی `.xls` یا `.csv` دارید، در اکسل با Save As به xlsx تبدیل کنید.",
+        "height": 320,
+        "width": 700,
+        "color": 4
+      },
+      "id": "81b684cd-fcd7-475b-9890-cc476a98ef6c",
+      "name": "Sticky Note 345961f4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## لازم نیست ستون‌ها دقیق باشند\n\nسیستم نام‌های رایج را می‌شناسد؛ مثلاً برای مبلغ: «مبلغ»، «قیمت»، «بها»، «جمع»، «amount».\n\n**تاریخ** به هر سه شکل خوانده می‌شود: شمسی (۱۴۰۵/۰۵/۱۸)، میلادی (2026-08-09) و سریال داخلی اکسل. اگر خوانده نشود، تاریخ امروز ثبت و در ستون توضیح علامت‌گذاری می‌شود.\n\nاعداد فارسی و عربی و جداکننده هزارگان خودکار پاک‌سازی می‌شوند.\n\nردیف‌های بدون مبلغ معتبر رد شده و در ایمیل خلاصه گزارش می‌شوند.",
+        "height": 300,
+        "width": 620,
+        "color": 3
+      },
+      "id": "6aa7b761-b91a-4495-b20f-11b327b823d3",
+      "name": "Sticky Note 6897b601",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -96
+      ]
+    }
+  ],
+  "connections": {
+    "آپلود فایل اکسل": {
+      "main": [
+        [
+          {
+            "node": "استخراج از فایل فرم",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "استخراج از فایل فرم": {
+      "main": [
+        [
+          {
+            "node": "تنظیمات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تنظیمات": {
+      "main": [
+        [
+          {
+            "node": "مدرسین",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ایمیل با پیوست اکسل": {
+      "main": [
+        [
+          {
+            "node": "استخراج از پیوست ایمیل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "استخراج از پیوست ایمیل": {
+      "main": [
+        [
+          {
+            "node": "تنظیمات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "مدرسین": {
+      "main": [
+        [
+          {
+            "node": "کلاس‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "کلاس‌ها": {
+      "main": [
+        [
+          {
+            "node": "سرمایه‌گذاران",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "سرمایه‌گذاران": {
+      "main": [
+        [
+          {
+            "node": "نرمال‌سازی ردیف‌های اکسل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "نرمال‌سازی ردیف‌های اکسل": {
+      "main": [
+        [
+          {
+            "node": "مسیر شیت مقصد",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "مسیر شیت مقصد": {
+      "main": [
+        [
+          {
+            "node": "ثبت انبوه درآمد",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ثبت انبوه هزینه",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ثبت انبوه جلسات تدریس",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ثبت انبوه آورده سرمایه",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ثبت خطای واردات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت انبوه درآمد": {
+      "main": [
+        [
+          {
+            "node": "خلاصه واردات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "خلاصه واردات": {
+      "main": [
+        [
+          {
+            "node": "اطلاع نتیجه واردات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت انبوه هزینه": {
+      "main": [
+        [
+          {
+            "node": "خلاصه واردات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت انبوه جلسات تدریس": {
+      "main": [
+        [
+          {
+            "node": "خلاصه واردات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت انبوه آورده سرمایه": {
+      "main": [
+        [
+          {
+            "node": "خلاصه واردات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت خطای واردات": {
+      "main": [
+        [
+          {
+            "node": "خلاصه واردات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Asia/Tehran",
+    "saveDataErrorExecution": "all",
+    "binaryMode": "separate"
+  }
+}

@@ -1,0 +1,932 @@
+{
+  "id": "nQ9LaOcXd6hylOWz",
+  "name": "۰۴ | پروژه حسابداری آموزشگاه : گزارش سه‌ماهه، شش‌ماهه، سالانه و ارزش تورمی سرمایه",
+  "description": "تجمیع گزارش‌های ماهانه به دوره‌های ۳، ۶ و ۱۲ ماهه شمسی با نرخ رشد، و محاسبه ارزش امروزِ آورده هر سرمایه‌گذار بر مبنای طلا، دلار یا تورم رسمی. ارسال ایمیل در پایان هر فصل.",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 23,
+              "triggerAtMinute": 45
+            }
+          ]
+        }
+      },
+      "id": "be58a52f-00a7-46fd-b521-647039b7c4a3",
+      "name": "بررسی روزانه ساعت ۲۳:۴۵",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1344,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function div(a,b){return ~~(a/b);}\nfunction mod(a,b){return a-~~(a/b)*b;}\nfunction jalCal(jy){var bk=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178],bl=bk.length,gy=jy+621,leapJ=-14,jp=bk[0],jm,jump=0,leap,n,i;if(jy<jp||jy>=bk[bl-1])throw new Error('سال شمسی نامعتبر');for(i=1;i<bl;i++){jm=bk[i];jump=jm-jp;if(jy<jm)break;leapJ=leapJ+div(jump,33)*8+div(mod(jump,33),4);jp=jm;}n=jy-jp;leapJ=leapJ+div(n,33)*8+div(mod(n,33)+3,4);if(mod(jump,33)===4&&jump-n===4)leapJ+=1;var leapG=div(gy,4)-div((div(gy,100)+1)*3,4)-150,march=20+leapJ-leapG;if(jump-n<6)n=n-jump+div(jump+4,33)*33;leap=mod(mod(n+1,33)-1,4);if(leap===-1)leap=4;return{leap:leap,gy:gy,march:march};}\nfunction g2d(gy,gm,gd){var d=div((gy+div(gm-8,6)+100100)*1461,4)+div(153*mod(gm+9,12)+2,5)+gd-34840408;d=d-div(div(gy+100100+div(gm-8,6),100)*3,4)+752;return d;}\nfunction d2g(jdn){var j=4*jdn+139361631;j=j+div(div(4*jdn+183187720,146097)*3,4)*4-3908;var i=div(mod(j,1461),4)*5+308,gd=div(mod(i,153),5)+1,gm=mod(div(i,153),12)+1,gy=div(j,1461)-100100+div(8-gm,6);return{gy:gy,gm:gm,gd:gd};}\nfunction d2j(jdn){var gy=d2g(jdn).gy,jy=gy-621,r=jalCal(jy),jdn1f=g2d(gy,3,r.march),k=jdn-jdn1f,jm,jd;if(k>=0){if(k<=185){jm=1+div(k,31);jd=mod(k,31)+1;return{jy:jy,jm:jm,jd:jd};}k-=186;}else{jy-=1;k+=179;if(r.leap===1)k+=1;}jm=7+div(k,30);jd=mod(k,30)+1;return{jy:jy,jm:jm,jd:jd};}\nfunction pad(n){return String(n).length<2?'0'+n:String(n);}\nfunction toJ(iso){var p=String(iso).slice(0,10).split('-');return d2j(g2d(+p[0],+p[1],+p[2]));}\nfunction jLen(jy,jm){if(jm<=6)return 31;if(jm<=11)return 30;return jalCal(jy).leap===0?30:29;}\n\nlet isScheduled = false;\ntry { isScheduled = !!$('بررسی روزانه ساعت ۲۳:۴۵').first(); } catch (e) { isScheduled = false; }\n\nconst todayISO = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Tehran' });\nconst t = toJ(todayISO);\nconst isLastDay = t.jd === jLen(t.jy, t.jm);\n\nconst closesQuarter = isLastDay && (t.jm === 3 || t.jm === 6 || t.jm === 9 || t.jm === 12);\nconst shouldRun = !isScheduled || closesQuarter;\n\nconst DEFS = [\n  ['سه‌ماهه', 'Q1', 1, 3], ['سه‌ماهه', 'Q2', 4, 6], ['سه‌ماهه', 'Q3', 7, 9], ['سه‌ماهه', 'Q4', 10, 12],\n  ['شش‌ماهه', 'H1', 1, 6], ['شش‌ماهه', 'H2', 7, 12],\n  ['سالانه', 'Y', 1, 12],\n];\n\nconst lastCompleteMonth = isLastDay ? t.jm : t.jm - 1;\n\nconst periods = [];\n[t.jy - 1, t.jy].forEach(function (jy) {\n  const limit = jy < t.jy ? 12 : lastCompleteMonth;\n  DEFS.forEach(function (d) {\n    if (d[3] <= limit) {\n      periods.push({ type: d[0], code: d[1], jy: jy, fromM: d[2], toM: d[3], id: jy + '-' + d[1] });\n    }\n  });\n});\n\nreturn [{\n  json: {\n    shouldRun: shouldRun,\n    shouldEmail: !isScheduled || closesQuarter,\n    isScheduled: isScheduled,\n    todayISO: todayISO,\n    todayShamsi: t.jy + '/' + pad(t.jm) + '/' + pad(t.jd),\n    jy: t.jy,\n    jm: t.jm,\n    periods: periods,\n    reason: shouldRun ? 'دوره‌های کامل‌شده بازمحاسبه می‌شوند' : 'امروز پایان فصل نیست',\n  },\n}];"
+      },
+      "id": "2af8b9a5-34ec-4afb-bd3a-959e81bca5e6",
+      "name": "تعیین دوره‌های سررسید",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1104,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "0d2e6ddb-5e49-4e0c-ad88-7a50cc553507",
+      "name": "اجرای دستی گزارش دوره‌ای",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.shouldRun }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4ead3249-0d51-41a0-a026-664a4567800b",
+      "name": "آیا امروز باید محاسبه شود؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1854744989",
+          "cachedResultName": "تنظیمات"
+        },
+        "options": {}
+      },
+      "id": "0985232f-cebe-4994-a01d-50a3db5c4919",
+      "name": "تنظیمات",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -640,
+        0
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1181014727",
+          "cachedResultName": "گزارش_ماهانه"
+        },
+        "options": {}
+      },
+      "id": "62d94360-7afc-49f7-a178-553dae73fd00",
+      "name": "گزارش ماهانه",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1019742628",
+          "cachedResultName": "آورده_سرمایه"
+        },
+        "options": {}
+      },
+      "id": "e1b8055f-b368-4256-b9f9-09e8ea052fd6",
+      "name": "آورده سرمایه",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -240,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1656252554",
+          "cachedResultName": "شاخص_سالانه"
+        },
+        "options": {}
+      },
+      "id": "a5e05152-6f68-4c79-a708-4b08608aec97",
+      "name": "شاخص سالانه",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -48,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.nerkh.io/v1/prices/json/gold",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "36fd439f-ad89-494a-b3e8-c747a8cd2c33",
+      "name": "نرخ طلا امروز",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        160,
+        0
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "yp6igAQ1JCyHKRxV",
+          "name": "Nerkh API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.nerkh.io/v1/prices/json/currency",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "f36b0f1f-2056-4f83-9c70-87a53b4ffeca",
+      "name": "نرخ دلار امروز",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        368,
+        0
+      ],
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "yp6igAQ1JCyHKRxV",
+          "name": "Nerkh API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function toNum(v){var s=String(v==null?'':v).replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d);}).replace(/[^0-9.\\-]/g,'');var n=Number(s);return Number.isFinite(n)?n:0;}\nfunction rows(name){ try { return $(name).all().map(function(i){return i.json||{};}); } catch(e) { return []; } }\nfunction priceOf(name, sym){ try { const p=$(name).first().json; const v=p&&p.data&&p.data.prices&&p.data.prices[sym]?p.data.prices[sym].current:null; return toNum(v);} catch(e){ return 0; } }\n\nconst ctl = $('تعیین دوره‌های سررسید').first().json;\n\nconst settings = {};\nrows('تنظیمات').forEach(function (r) { if (r['کلید']) settings[String(r['کلید']).trim()] = r['مقدار']; });\nconst basis = String(settings['مبنای_تعدیل_سرمایه'] || 'طلا').trim();\nconst reportEmail = String(settings['ایمیل_گزارش'] || 'f.shams.apg@gmail.com');\nconst schoolName = String(settings['نام_آموزشگاه'] || 'آموزشگاه علمی فردا');\n\nconst monthly = rows('گزارش ماهانه').filter(function (r) { return r['شناسه_دوره']; });\nconst capital = rows('آورده سرمایه').filter(function (r) { return r['شناسه']; });\nconst idx = {};\nrows('شاخص سالانه').forEach(function (r) {\n  const y = toNum(r['سال_شمسی']);\n  if (y) idx[y] = toNum(r['نرخ_تورم_رسمی_درصد']);\n});\n\nconst goldToday = priceOf('نرخ طلا امروز', 'GOLD18K');\nconst usdToday = priceOf('نرخ دلار امروز', 'USD');\n\nconst now = new Date().toISOString();\n\nfunction aggregate(jy, fromM, toM) {\n  const sel = monthly.filter(function (r) {\n    const y = toNum(r['سال_شمسی']);\n    const m = toNum(r['ماه_شمسی']);\n    return y === jy && m >= fromM && m <= toM;\n  });\n  const acc = { income: 0, expense: 0, payroll: 0, profit: 0, capital: 0, months: sel.length };\n  sel.forEach(function (r) {\n    acc.income += toNum(r['جمع_درآمد']);\n    acc.expense += toNum(r['جمع_هزینه']);\n    acc.payroll += toNum(r['حقوق_مدرسین']);\n    acc.profit += toNum(r['سود_عملیاتی']);\n    acc.capital += toNum(r['آورده_سرمایه_گذار']);\n  });\n  return acc;\n}\n\nfunction previousOf(p) {\n  if (p.code === 'Y') return { jy: p.jy - 1, fromM: 1, toM: 12 };\n  if (p.code === 'H1') return { jy: p.jy - 1, fromM: 7, toM: 12 };\n  if (p.code === 'H2') return { jy: p.jy, fromM: 1, toM: 6 };\n  if (p.code === 'Q1') return { jy: p.jy - 1, fromM: 10, toM: 12 };\n  if (p.code === 'Q2') return { jy: p.jy, fromM: 1, toM: 3 };\n  if (p.code === 'Q3') return { jy: p.jy, fromM: 4, toM: 6 };\n  return { jy: p.jy, fromM: 7, toM: 9 };\n}\n\nconst periodRows = [];\n(ctl.periods || []).forEach(function (p) {\n  const a = aggregate(p.jy, p.fromM, p.toM);\n  if (a.months === 0) return;\n  const prevDef = previousOf(p);\n  const prev = aggregate(prevDef.jy, prevDef.fromM, prevDef.toM);\n  const growth = prev.profit !== 0 ? Math.round((a.profit - prev.profit) / Math.abs(prev.profit) * 1000) / 10 : '';\n  periodRows.push({\n    'نوع_دوره': p.type,\n    'شناسه_دوره': p.id,\n    'سال_شمسی': p.jy,\n    'از_ماه': p.fromM,\n    'تا_ماه': p.toM,\n    'جمع_درآمد': a.income,\n    'جمع_هزینه': a.expense,\n    'حقوق_مدرسین': a.payroll,\n    'سود': a.profit,\n    'حاشیه_سود_درصد': a.income > 0 ? Math.round(a.profit / a.income * 1000) / 10 : 0,\n    'میانگین_سود_ماهانه': a.months > 0 ? Math.round(a.profit / a.months) : 0,\n    'رشد_نسبت_به_دوره_قبل_درصد': growth,\n    'آورده_سرمایه_دوره': a.capital,\n    'تاریخ_تولید': now,\n  });\n});\n\nfunction inflate(amount, fromYear) {\n  let v = amount;\n  for (let y = fromYear; y < ctl.jy; y++) {\n    const rate = idx[y];\n    if (rate && rate > 0) v = v * (1 + rate / 100);\n  }\n  return Math.round(v);\n}\n\nconst byInvestor = {};\ncapital.forEach(function (r) {\n  const code = String(r['کد_سرمایه_گذار'] || 'نامشخص');\n  if (!byInvestor[code]) {\n    byInvestor[code] = { name: r['نام_سرمایه_گذار'] || code, nominal: 0, grams: 0, usd: 0, goldValue: 0, usdValue: 0, cpiValue: 0 };\n  }\n  const b = byInvestor[code];\n  const amount = toNum(r['مبلغ_تومان']);\n  const grams = toNum(r['معادل_گرم_طلا']);\n  const usd = toNum(r['معادل_دلار']);\n  const year = toNum(r['سال_شمسی']) || ctl.jy;\n  const cpi = inflate(amount, year);\n  b.nominal += amount;\n  b.grams += grams;\n  b.usd += usd;\n  b.cpiValue += cpi;\n  b.goldValue += (grams > 0 && goldToday > 0) ? Math.round(grams * goldToday) : cpi;\n  b.usdValue += (usd > 0 && usdToday > 0) ? Math.round(usd * usdToday) : cpi;\n});\n\nconst codes = Object.keys(byInvestor);\nfunction pickValue(b) {\n  if (basis === 'دلار') return b.usdValue;\n  if (basis.indexOf('تورم') >= 0) return b.cpiValue;\n  return b.goldValue;\n}\nlet totalBasis = 0;\ncodes.forEach(function (c) { totalBasis += pickValue(byInvestor[c]); });\n\nconst equityRows = codes.map(function (c) {\n  const b = byInvestor[c];\n  const value = pickValue(b);\n  return {\n    'تاریخ_محاسبه': now,\n    'سال_شمسی': ctl.jy,\n    'کد_سرمایه_گذار': c,\n    'نام_سرمایه_گذار': b.name,\n    'جمع_آورده_اسمی': b.nominal,\n    'معادل_گرم_طلا': Math.round(b.grams * 10000) / 10000,\n    'معادل_دلار': Math.round(b.usd * 100) / 100,\n    'نرخ_طلای18_امروز': goldToday || '',\n    'نرخ_دلار_امروز': usdToday || '',\n    'ارزش_روز_طلایی': b.goldValue,\n    'ارزش_روز_دلاری': b.usdValue,\n    'ارزش_روز_تورمی': b.cpiValue,\n    'سود_تورمی_تحقق_نیافته': value - b.nominal,\n    'درصد_از_کل_سرمایه': totalBasis > 0 ? Math.round(value / totalBasis * 1000) / 10 : 0,\n  };\n});\nequityRows.sort(function (a, b) { return b['جمع_آورده_اسمی'] - a['جمع_آورده_اسمی']; });\n\nreturn [{\n  json: {\n    ctl: ctl,\n    basis: basis,\n    reportEmail: reportEmail,\n    schoolName: schoolName,\n    goldToday: goldToday,\n    usdToday: usdToday,\n    periodRows: periodRows,\n    equityRows: equityRows,\n  },\n}];"
+      },
+      "id": "02675d29-2f57-4f36-9551-714f5342f62a",
+      "name": "محاسبه دوره‌ای و ارزش سرمایه",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return ($input.first().json.periodRows || []).map(function (r) { return { json: r }; });"
+      },
+      "id": "7d0c48b0-92fe-47cc-8660-fccaf7c10eb7",
+      "name": "تفکیک ردیف‌های دوره‌ای",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "545000826",
+          "cachedResultName": "گزارش_دوره‌ای"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "شناسه_دوره"
+          ],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "نوع_دوره",
+              "id": "نوع_دوره",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": true,
+              "display": true,
+              "displayName": "شناسه_دوره",
+              "id": "شناسه_دوره",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "سال_شمسی",
+              "id": "سال_شمسی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "از_ماه",
+              "id": "از_ماه",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "تا_ماه",
+              "id": "تا_ماه",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "جمع_درآمد",
+              "id": "جمع_درآمد",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "جمع_هزینه",
+              "id": "جمع_هزینه",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "حقوق_مدرسین",
+              "id": "حقوق_مدرسین",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "سود",
+              "id": "سود",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "حاشیه_سود_درصد",
+              "id": "حاشیه_سود_درصد",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "میانگین_سود_ماهانه",
+              "id": "میانگین_سود_ماهانه",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "رشد_نسبت_به_دوره_قبل_درصد",
+              "id": "رشد_نسبت_به_دوره_قبل_درصد",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "آورده_سرمایه_دوره",
+              "id": "آورده_سرمایه_دوره",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "تاریخ_تولید",
+              "id": "تاریخ_تولید",
+              "required": false,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "0b8f6793-ce3d-4301-8a65-fb3b50b6eb46",
+      "name": "ثبت گزارش دوره‌ای",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        -240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return ($input.first().json.equityRows || []).map(function (r) { return { json: r }; });"
+      },
+      "id": "71186d32-9503-417b-9b91-568e268c34c7",
+      "name": "تفکیک ارزش سرمایه",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1785178429",
+          "cachedResultName": "ارزش_سرمایه"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "کد_سرمایه_گذار"
+          ],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "تاریخ_محاسبه",
+              "id": "تاریخ_محاسبه",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "سال_شمسی",
+              "id": "سال_شمسی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": true,
+              "display": true,
+              "displayName": "کد_سرمایه_گذار",
+              "id": "کد_سرمایه_گذار",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "نام_سرمایه_گذار",
+              "id": "نام_سرمایه_گذار",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "جمع_آورده_اسمی",
+              "id": "جمع_آورده_اسمی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "معادل_گرم_طلا",
+              "id": "معادل_گرم_طلا",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "معادل_دلار",
+              "id": "معادل_دلار",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "نرخ_طلای18_امروز",
+              "id": "نرخ_طلای18_امروز",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "نرخ_دلار_امروز",
+              "id": "نرخ_دلار_امروز",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "ارزش_روز_طلایی",
+              "id": "ارزش_روز_طلایی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "ارزش_روز_دلاری",
+              "id": "ارزش_روز_دلاری",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "ارزش_روز_تورمی",
+              "id": "ارزش_روز_تورمی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "سود_تورمی_تحقق_نیافته",
+              "id": "سود_تورمی_تحقق_نیافته",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "درصد_از_کل_سرمایه",
+              "id": "درصد_از_کل_سرمایه",
+              "required": false,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "d90c2b5f-7e49-4f23-bc78-4a2da8df20ab",
+      "name": "ثبت ارزش سرمایه",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $input.first().json;\nconst SHEET_URL = 'https://docs.google.com/spreadsheets/d/12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4/edit';\nconst MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];\n\nfunction money(n) { return Math.round(Number(n) || 0).toLocaleString('en-US'); }\nfunction pctCell(v) {\n  if (v === '' || v === null || v === undefined) return '<td style=\"color:#9aa0a6\">—</td>';\n  const c = Number(v) >= 0 ? '#137333' : '#c5221f';\n  return '<td style=\"color:' + c + '\"><b>' + v + '٪</b></td>';\n}\n\nconst periods = d.periodRows || [];\nconst equity = d.equityRows || [];\nconst cy = d.ctl.jy;\n\nconst current = periods.filter(function (p) { return p['سال_شمسی'] === cy; });\nconst rowsHtml = current.map(function (p) {\n  return '<tr>'\n    + '<td>' + p['نوع_دوره'] + ' (' + MONTHS[p['از_ماه'] - 1] + ' تا ' + MONTHS[p['تا_ماه'] - 1] + ')</td>'\n    + '<td>' + money(p['جمع_درآمد']) + '</td>'\n    + '<td>' + money(p['جمع_هزینه']) + '</td>'\n    + '<td><b>' + money(p['سود']) + '</b></td>'\n    + '<td>' + p['حاشیه_سود_درصد'] + '٪</td>'\n    + '<td>' + money(p['میانگین_سود_ماهانه']) + '</td>'\n    + pctCell(p['رشد_نسبت_به_دوره_قبل_درصد'])\n    + '</tr>';\n}).join('');\n\nconst equityHtml = equity.map(function (e) {\n  const gain = e['سود_تورمی_تحقق_نیافته'];\n  const c = gain >= 0 ? '#137333' : '#c5221f';\n  return '<tr>'\n    + '<td>' + e['نام_سرمایه_گذار'] + '</td>'\n    + '<td>' + money(e['جمع_آورده_اسمی']) + '</td>'\n    + '<td>' + e['معادل_گرم_طلا'] + '</td>'\n    + '<td>' + money(e['ارزش_روز_طلایی']) + '</td>'\n    + '<td>' + money(e['ارزش_روز_دلاری']) + '</td>'\n    + '<td>' + money(e['ارزش_روز_تورمی']) + '</td>'\n    + '<td style=\"color:' + c + '\"><b>' + money(gain) + '</b></td>'\n    + '<td>' + e['درصد_از_کل_سرمایه'] + '٪</td>'\n    + '</tr>';\n}).join('');\n\nlet nominalSum = 0, basisSum = 0;\nequity.forEach(function (e) {\n  nominalSum += Number(e['جمع_آورده_اسمی']) || 0;\n  basisSum += Number(d.basis === 'دلار' ? e['ارزش_روز_دلاری'] : (String(d.basis).indexOf('تورم') >= 0 ? e['ارزش_روز_تورمی'] : e['ارزش_روز_طلایی'])) || 0;\n});\n\nconst rateNote = d.goldToday\n  ? 'نرخ مبنا: طلای ۱۸ عیار ' + money(d.goldToday) + ' تومان — دلار ' + money(d.usdToday) + ' تومان'\n  : 'نرخ لحظه‌ای در دسترس نبود؛ محاسبه بر پایه تورم رسمی شیت «شاخص_سالانه» انجام شد.';\n\nconst html = '<div dir=\"rtl\" style=\"font-family:Tahoma,Arial,sans-serif;font-size:14px;color:#202124;max-width:860px\">'\n  + '<h2 style=\"margin:0 0 4px\">گزارش دوره‌ای سال ' + cy + '</h2>'\n  + '<div style=\"color:#5f6368;margin-bottom:16px\">' + d.schoolName + ' — تا تاریخ ' + d.ctl.todayShamsi + ' — مبالغ به تومان</div>'\n  + '<h3 style=\"margin:18px 0 6px\">سود و زیان دوره‌ای</h3>'\n  + (current.length\n    ? '<table border=\"1\" cellpadding=\"7\" style=\"border-collapse:collapse;border-color:#dadce0;width:100%\">'\n      + '<tr style=\"background:#f1f3f4\"><th align=\"right\">دوره</th><th align=\"right\">درآمد</th><th align=\"right\">هزینه</th><th align=\"right\">سود</th><th>حاشیه</th><th align=\"right\">میانگین ماهانه</th><th>رشد</th></tr>'\n      + rowsHtml + '</table>'\n    : '<div style=\"color:#5f6368\">هنوز دوره کاملی در سال ' + cy + ' بسته نشده است.</div>')\n  + '<h3 style=\"margin:22px 0 6px\">ارزش امروزِ سرمایه‌گذاران</h3>'\n  + '<div style=\"color:#5f6368;font-size:12px;margin-bottom:8px\">مبنای انتخابی شما: <b>' + d.basis + '</b> — ' + rateNote + '</div>'\n  + (equity.length\n    ? '<table border=\"1\" cellpadding=\"7\" style=\"border-collapse:collapse;border-color:#dadce0;width:100%\">'\n      + '<tr style=\"background:#f1f3f4\"><th align=\"right\">سرمایه‌گذار</th><th align=\"right\">آورده اسمی</th><th>گرم طلا</th><th align=\"right\">ارزش طلایی</th><th align=\"right\">ارزش دلاری</th><th align=\"right\">ارزش تورمی</th><th align=\"right\">رشد ارزش</th><th>سهم</th></tr>'\n      + equityHtml\n      + '<tr style=\"background:#f8f9fa\"><td><b>جمع</b></td><td><b>' + money(nominalSum) + '</b></td><td></td><td colspan=\"3\"><b>' + money(basisSum) + '</b> (مبنای ' + d.basis + ')</td><td><b>' + money(basisSum - nominalSum) + '</b></td><td></td></tr>'\n      + '</table>'\n    : '<div style=\"color:#5f6368\">هنوز آورده‌ای در شیت «آورده_سرمایه» ثبت نشده است.</div>')\n  + '<div style=\"background:#fef7e0;padding:12px;border-radius:8px;margin-top:14px;font-size:13px\">'\n  + 'ستون «رشد ارزش» یعنی اگر همان پول در تاریخ آورده به طلا/دلار تبدیل شده بود، امروز چقدر می‌ارزید. '\n  + 'این عدد <b>بدهی ثبت‌شده نیست</b> — فقط نشان می‌دهد سرمایه‌گذارها از نظر قدرت خرید کجا ایستاده‌اند.'\n  + '</div>'\n  + '<p><a href=\"' + SHEET_URL + '\" style=\"background:#1a73e8;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;display:inline-block\">باز کردن دفتر حسابداری</a></p>'\n  + '</div>';\n\nreturn [{\n  json: {\n    shouldEmail: d.ctl.shouldEmail,\n    reportEmail: d.reportEmail,\n    subject: 'گزارش دوره‌ای و ارزش سرمایه — ' + d.schoolName + ' (' + d.ctl.todayShamsi + ')',\n    html: html,\n  },\n}];"
+      },
+      "id": "16a4eb3b-2d2f-4a19-ae85-b14b028f8204",
+      "name": "ساخت ایمیل دوره‌ای",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.shouldEmail }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b357c2a0-0730-455f-810f-8bd44355b771",
+      "name": "آیا ایمیل ارسال شود؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.reportEmail }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "حسابداری آموزشگاه فردا"
+        }
+      },
+      "id": "8a813211-2260-4b11-b106-7fb66d5b657e",
+      "name": "ارسال گزارش دوره‌ای",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        272
+      ],
+      "webhookId": "5536e48c-c969-4c41-a205-d32821eefe98",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cKUvZh7X6OAAQkpq",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## چه زمانی اجرا می‌شود؟\n\n**خودکار:** هر شب ۲۳:۴۵ چک می‌شود، ولی فقط در آخرین روز **خرداد، شهریور، آذر و اسفند** (پایان فصل‌های شمسی) ادامه می‌دهد.\n\nدر آن نقطه همه دوره‌های کامل‌شده سال جاری و سال قبل بازمحاسبه و به‌روزرسانی می‌شوند: Q1..Q4، H1، H2 و سالانه.\n\n**دستی:** هر وقت بخواهید — همه دوره‌های کامل تا امروز محاسبه و ایمیل می‌شود.\n\nمنبع محاسبه: شیت «گزارش_ماهانه» که ورک‌فلوی ۰۳ پر می‌کند.",
+        "height": 320,
+        "width": 700,
+        "color": 4
+      },
+      "id": "a14a30b9-ba38-4f55-9c43-780db0205590",
+      "name": "Sticky Note 4262f86e",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ارزش‌گذاری تورمی سرمایه\n\nبرای هر آورده سه ارزش محاسبه می‌شود:\n\n- **طلایی** = گرم طلای ثبت‌شده × نرخ امروز\n- **دلاری** = دلار ثبت‌شده × نرخ امروز\n- **تورمی** = مبلغ اسمی × حاصل‌ضرب تورم سال‌های بعد از آن (شیت «شاخص_سالانه»)\n\nاگر آورده‌ای گرم طلا نداشته باشد (ورودی دستی سال‌های قبل)، خودکار از روش تورمی استفاده می‌شود.\n\nکدام‌یک ملاک باشد؟ کلید `مبنای_تعدیل_سرمایه` در شیت «تنظیمات».",
+        "height": 300,
+        "width": 900,
+        "color": 6
+      },
+      "id": "a394df50-6bde-45e2-af4c-d9ab800b09b3",
+      "name": "Sticky Note 2e5fd467",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -48
+      ]
+    }
+  ],
+  "connections": {
+    "بررسی روزانه ساعت ۲۳:۴۵": {
+      "main": [
+        [
+          {
+            "node": "تعیین دوره‌های سررسید",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تعیین دوره‌های سررسید": {
+      "main": [
+        [
+          {
+            "node": "آیا امروز باید محاسبه شود؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "اجرای دستی گزارش دوره‌ای": {
+      "main": [
+        [
+          {
+            "node": "تعیین دوره‌های سررسید",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "آیا امروز باید محاسبه شود؟": {
+      "main": [
+        [
+          {
+            "node": "تنظیمات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تنظیمات": {
+      "main": [
+        [
+          {
+            "node": "گزارش ماهانه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "گزارش ماهانه": {
+      "main": [
+        [
+          {
+            "node": "آورده سرمایه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "آورده سرمایه": {
+      "main": [
+        [
+          {
+            "node": "شاخص سالانه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "شاخص سالانه": {
+      "main": [
+        [
+          {
+            "node": "نرخ طلا امروز",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "نرخ طلا امروز": {
+      "main": [
+        [
+          {
+            "node": "نرخ دلار امروز",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "نرخ دلار امروز": {
+      "main": [
+        [
+          {
+            "node": "محاسبه دوره‌ای و ارزش سرمایه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "محاسبه دوره‌ای و ارزش سرمایه": {
+      "main": [
+        [
+          {
+            "node": "تفکیک ردیف‌های دوره‌ای",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "تفکیک ارزش سرمایه",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ساخت ایمیل دوره‌ای",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تفکیک ردیف‌های دوره‌ای": {
+      "main": [
+        [
+          {
+            "node": "ثبت گزارش دوره‌ای",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تفکیک ارزش سرمایه": {
+      "main": [
+        [
+          {
+            "node": "ثبت ارزش سرمایه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ساخت ایمیل دوره‌ای": {
+      "main": [
+        [
+          {
+            "node": "آیا ایمیل ارسال شود؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "آیا ایمیل ارسال شود؟": {
+      "main": [
+        [
+          {
+            "node": "ارسال گزارش دوره‌ای",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Asia/Tehran",
+    "saveDataErrorExecution": "all",
+    "binaryMode": "separate"
+  }
+}

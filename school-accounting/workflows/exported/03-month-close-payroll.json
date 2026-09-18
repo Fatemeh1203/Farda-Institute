@@ -1,0 +1,1102 @@
+{
+  "id": "ibtnu3CNB8RcJl8D",
+  "name": "۰۳ | پروژه حسابداری آموزشگاه : بستن ماه، حقوق مدرسین و گزارش ماهانه",
+  "description": "در آخرین روز هر ماه شمسی: محاسبه حقوق درصدی هر مدرس بر اساس نوع کلاس، ثبت در شیت حقوق، ساخت گزارش سود و زیان ماه و ارسال ایمیل HTML به‌همراه پیوست اکسل فیش‌های حقوقی.",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 23,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "33bc8cb0-1ffe-4b68-9d34-54f4c8d77ef8",
+      "name": "بررسی روزانه ساعت ۲۳:۳۰",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1344,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function div(a,b){return ~~(a/b);}\nfunction mod(a,b){return a-~~(a/b)*b;}\nfunction jalCal(jy){var bk=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178],bl=bk.length,gy=jy+621,leapJ=-14,jp=bk[0],jm,jump=0,leap,n,i;if(jy<jp||jy>=bk[bl-1])throw new Error('سال شمسی نامعتبر');for(i=1;i<bl;i++){jm=bk[i];jump=jm-jp;if(jy<jm)break;leapJ=leapJ+div(jump,33)*8+div(mod(jump,33),4);jp=jm;}n=jy-jp;leapJ=leapJ+div(n,33)*8+div(mod(n,33)+3,4);if(mod(jump,33)===4&&jump-n===4)leapJ+=1;var leapG=div(gy,4)-div((div(gy,100)+1)*3,4)-150,march=20+leapJ-leapG;if(jump-n<6)n=n-jump+div(jump+4,33)*33;leap=mod(mod(n+1,33)-1,4);if(leap===-1)leap=4;return{leap:leap,gy:gy,march:march};}\nfunction g2d(gy,gm,gd){var d=div((gy+div(gm-8,6)+100100)*1461,4)+div(153*mod(gm+9,12)+2,5)+gd-34840408;d=d-div(div(gy+100100+div(gm-8,6),100)*3,4)+752;return d;}\nfunction d2g(jdn){var j=4*jdn+139361631;j=j+div(div(4*jdn+183187720,146097)*3,4)*4-3908;var i=div(mod(j,1461),4)*5+308,gd=div(mod(i,153),5)+1,gm=mod(div(i,153),12)+1,gy=div(j,1461)-100100+div(8-gm,6);return{gy:gy,gm:gm,gd:gd};}\nfunction d2j(jdn){var gy=d2g(jdn).gy,jy=gy-621,r=jalCal(jy),jdn1f=g2d(gy,3,r.march),k=jdn-jdn1f,jm,jd;if(k>=0){if(k<=185){jm=1+div(k,31);jd=mod(k,31)+1;return{jy:jy,jm:jm,jd:jd};}k-=186;}else{jy-=1;k+=179;if(r.leap===1)k+=1;}jm=7+div(k,30);jd=mod(k,30)+1;return{jy:jy,jm:jm,jd:jd};}\nfunction j2d(jy,jm,jd){var r=jalCal(jy);return g2d(r.gy,3,r.march)+(jm-1)*31-div(jm,7)*(jm-7)+jd-1;}\nfunction pad(n){return String(n).length<2?'0'+n:String(n);}\nfunction toJ(iso){var p=String(iso).slice(0,10).split('-');return d2j(g2d(+p[0],+p[1],+p[2]));}\nfunction toG(jy,jm,jd){var g=d2g(j2d(jy,jm,jd));return g.gy+'-'+pad(g.gm)+'-'+pad(g.gd);}\nfunction jLen(jy,jm){if(jm<=6)return 31;if(jm<=11)return 30;return jalCal(jy).leap===0?30:29;}\n\nconst MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];\n\n// در پنل n8n دکمهٔ Execute نود زمان‌بندی را هم اجرا می‌کند، پس وجود آن نود\n// معیار درستی نیست. معیار واقعی حالت اجراست.\nlet mode = '';\ntry { mode = String($execution.mode || ''); } catch (e) { mode = ''; }\nlet scheduleFired = false;\ntry { scheduleFired = !!$('بررسی روزانه ساعت ۲۳:۳۰').first(); } catch (e) { scheduleFired = false; }\nconst isManualRun = mode === 'test' || mode === 'manual' || mode === 'cli';\nconst isScheduled = scheduleFired && !isManualRun;\n\nconst todayISO = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Tehran' });\nconst t = toJ(todayISO);\nconst lastDay = jLen(t.jy, t.jm);\n\nlet jy = t.jy;\nlet jm = t.jm;\nlet shouldRun = false;\nlet reason = '';\n\nif (isScheduled) {\n  shouldRun = t.jd === lastDay;\n  reason = shouldRun ? 'آخرین روز ماه شمسی' : 'اجرای زمان‌بندی‌شده — امروز روز ' + t.jd + ' از ' + lastDay + ' است، هنوز پایان ماه نیست';\n} else {\n  shouldRun = true;\n  if (t.jd <= 5) {\n    jm = t.jm - 1;\n    if (jm === 0) { jm = 12; jy = t.jy - 1; }\n    reason = 'اجرای دستی در روزهای ابتدایی ماه — ماه قبل بسته می‌شود';\n  } else {\n    reason = 'اجرای دستی — ماه جاری (تا امروز) بسته می‌شود';\n  }\n}\n\nconst len = jLen(jy, jm);\n\nreturn [{\n  json: {\n    shouldRun: shouldRun,\n    reason: reason,\n    isScheduled: isScheduled,\n    executionMode: mode,\n    jy: jy,\n    jm: jm,\n    periodId: jy + '-' + pad(jm),\n    monthName: MONTHS[jm - 1],\n    monthLabel: MONTHS[jm - 1] + ' ' + jy,\n    startISO: toG(jy, jm, 1),\n    endISO: toG(jy, jm, len),\n    todayISO: todayISO,\n    todayShamsi: t.jy + '/' + pad(t.jm) + '/' + pad(t.jd),\n  },\n}];"
+      },
+      "id": "83a8af2c-e70a-4c1d-a7b0-5279d0752484",
+      "name": "تعیین دوره",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1104,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "4893817b-6e6b-4546-baf6-7461f4a2e0ba",
+      "name": "اجرای دستی بستن ماه",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.shouldRun }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5b10b033-8b10-4343-8bbc-2b1fdd390b9f",
+      "name": "آیا ماه تمام شده؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1854744989",
+          "cachedResultName": "تنظیمات"
+        },
+        "options": {}
+      },
+      "id": "1a7bafa7-6d4a-4ca0-86fc-d5714b7752b9",
+      "name": "تنظیمات",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -640,
+        0
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "486168317",
+          "cachedResultName": "مدرسین"
+        },
+        "options": {}
+      },
+      "id": "f9bcc82e-86ce-4353-99a2-cf9d98e1be3c",
+      "name": "مدرسین",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "cachedResultName": "برنامه_کلاس‌ها",
+          "mode": "list",
+          "value": "1360814277"
+        },
+        "options": {}
+      },
+      "id": "e92143a0-f6bc-40a1-8b50-9290b38975b0",
+      "name": "برنامه کلاس‌ها",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -240,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1223345002",
+          "cachedResultName": "درآمد"
+        },
+        "options": {}
+      },
+      "id": "4c846c72-3829-4d08-9f6f-635878d9af6e",
+      "name": "درآمد",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -48,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "226026858",
+          "cachedResultName": "هزینه‌ها"
+        },
+        "options": {}
+      },
+      "id": "dcbff695-e3a8-4b3c-a8be-ee65ebfe7e95",
+      "name": "هزینه‌ها",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        160,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1019742628",
+          "cachedResultName": "آورده_سرمایه"
+        },
+        "options": {}
+      },
+      "id": "3434dbbb-2f97-4da2-a1f4-d0918fcf4f5a",
+      "name": "آورده سرمایه",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function toNum(v){var s=String(v==null?'':v).replace(/[۰-۹]/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d);}).replace(/[٬٫،,_\\s]/g,'').replace(/\\.(?=\\d{3}(\\D|$))/g,'').replace(/[^0-9.\\-]/g,'');var n=Number(s);return Number.isFinite(n)?n:0;}\nfunction rows(name){ try { return $(name).all().map(function(i){return i.json||{};}); } catch(e) { return []; } }\n\nconst period = $('تعیین دوره').first().json;\nconst JY = period.jy;\nconst JM = period.jm;\n\nconst settings = {};\nrows('تنظیمات').forEach(function (r) { if (r['کلید']) settings[String(r['کلید']).trim()] = r['مقدار']; });\n\nconst taxPct = toNum(settings['درصد_مالیات']);\nconst insPct = toNum(settings['درصد_بیمه']);\nconst reportEmail = String(settings['ایمیل_گزارش'] || 'f.shams.apg@gmail.com');\nconst schoolName = String(settings['نام_آموزشگاه'] || 'آموزشگاه علمی فردا');\n\nconst inPeriod = function (r) { return toNum(r['سال_شمسی']) === JY && toNum(r['ماه_شمسی']) === JM; };\n\nconst teachers = rows('مدرسین').filter(function (r) { return r['کد_مدرس'] && String(r['وضعیت'] || '').trim() !== 'غیرفعال'; });\nconst classRows = rows('کلاس‌ها').filter(function (r) { return r['کد_کلاس']; });\nconst schedule = rows('برنامه کلاس‌ها').filter(function (r) { return r['شناسه'] && inPeriod(r); });\nconst income = rows('درآمد').filter(function (r) { return r['شناسه'] && inPeriod(r); });\nconst expenses = rows('هزینه‌ها').filter(function (r) { return r['شناسه'] && inPeriod(r); });\nconst capital = rows('آورده سرمایه').filter(function (r) { return r['شناسه'] && inPeriod(r); });\n\nconst classType = {};\nclassRows.forEach(function (c) { classType[String(c['کد_کلاس']).trim()] = String(c['نوع_کلاس'] || ''); });\n\nconst byTeacher = {};\nfunction bucket(key, code, name) {\n  if (!byTeacher[key]) {\n    byTeacher[key] = { code: code || '', name: name || '', baseH: 0, baseO: 0, shareH: 0, shareO: 0, sessH: 0, sessO: 0, students: 0 };\n  }\n  if (!byTeacher[key].name && name) byTeacher[key].name = name;\n  return byTeacher[key];\n}\n\nincome.forEach(function (r) {\n  const share = toNum(r['سهم_مدرس']);\n  if (share <= 0) return;\n  const code = String(r['کد_مدرس'] || '').trim();\n  const name = String(r['نام_مدرس'] || '').trim();\n  if (!code && !name) return;\n  const key = code || ('نام:' + name);\n  const b = bucket(key, code, name);\n  const amount = toNum(r['مبلغ']);\n  const t = classType[String(r['کد_کلاس'] || '').trim()] || '';\n  if (t.indexOf('آنلاین') >= 0) { b.baseO += amount; b.shareO += share; }\n  else { b.baseH += amount; b.shareH += share; }\n});\n\nlet totalSessions = 0;\nlet totalStudents = 0;\nschedule.forEach(function (r) {\n  if (String(r['وضعیت'] || '').indexOf('لغو') >= 0) return;\n  const n = toNum(r['تعداد_جلسه']) || 1;\n  const st = toNum(r['تعداد_فراگیر']);\n  totalSessions += n;\n  totalStudents += st;\n  const code = String(r['کد_مدرس'] || '').trim();\n  const name = String(r['نام_مدرس'] || '').trim();\n  if (!code && !name) return;\n  const key = code || ('نام:' + name);\n  const b = bucket(key, code, name);\n  if (String(r['نوع_کلاس'] || '').indexOf('آنلاین') >= 0) b.sessO += n;\n  else b.sessH += n;\n  b.students += st;\n});\n\nconst now = new Date().toISOString();\nconst payroll = [];\nlet payrollTotal = 0;\nconst EMPTY = { code: '', name: '', baseH: 0, baseO: 0, shareH: 0, shareO: 0, sessH: 0, sessO: 0, students: 0 };\n\nfunction pushRow(code, name, email, iban, b, fixed) {\n  const variable = b.shareH + b.shareO;\n  if (variable === 0 && fixed === 0) return;\n  const gross = variable + fixed;\n  const deductions = Math.round(gross * (taxPct + insPct) / 100);\n  const net = gross - deductions;\n  payrollTotal += net;\n  payroll.push({\n    'شناسه_دوره': period.periodId + '|' + (code || name),\n    'سال_شمسی': JY,\n    'ماه_شمسی': JM,\n    'کد_مدرس': code,\n    'نام_مدرس': name,\n    'ایمیل': email,\n    'جلسات_حضوری': b.sessH,\n    'جلسات_آنلاین': b.sessO,\n    'درآمد_منتسب_حضوری': b.baseH,\n    'درآمد_منتسب_آنلاین': b.baseO,\n    'درصد_حضوری': b.baseH > 0 ? Math.round(b.shareH / b.baseH * 1000) / 10 : 0,\n    'درصد_آنلاین': b.baseO > 0 ? Math.round(b.shareO / b.baseO * 1000) / 10 : 0,\n    'حقوق_درصدی': variable,\n    'حقوق_ثابت': fixed,\n    'کسورات': deductions,\n    'خالص_پرداختی': net,\n    'شماره_شبا': iban,\n    'وضعیت_پرداخت': 'پرداخت نشده',\n    'تاریخ_محاسبه': now,\n  });\n}\n\nconst seen = {};\nteachers.forEach(function (t) {\n  const code = String(t['کد_مدرس']).trim();\n  seen[code] = true;\n  const b = byTeacher[code] || EMPTY;\n  const contract = String(t['نوع_قرارداد'] || 'درصدی');\n  const hasFixed = contract.indexOf('ثابت') >= 0 || contract.indexOf('ترکیبی') >= 0;\n  const fixed = hasFixed ? toNum(t['حقوق_ثابت_ماهانه']) : 0;\n  pushRow(code, String(t['نام_مدرس'] || ''), String(t['ایمیل'] || ''), String(t['شماره_شبا'] || ''), b, fixed);\n});\n\nObject.keys(byTeacher).forEach(function (key) {\n  const b = byTeacher[key];\n  if (b.code && seen[b.code]) return;\n  pushRow(b.code, b.name || b.code, '', '', b, 0);\n});\n\npayroll.sort(function (a, b) { return b['خالص_پرداختی'] - a['خالص_پرداختی']; });\n\nlet tuition = 0, partner = 0, other = 0;\nincome.forEach(function (r) {\n  const kind = String(r['نوع_درآمد'] || '');\n  const amount = toNum(r['مبلغ']);\n  if (kind.indexOf('شهریه') >= 0) tuition += amount;\n  else if (kind.indexOf('همکار') >= 0) partner += amount;\n  else other += amount;\n});\nconst totalIncome = tuition + partner + other;\n\nconst expenseByCategory = {};\nlet otherExpenses = 0;\nexpenses.forEach(function (r) {\n  const c = String(r['دسته_هزینه'] || 'سایر');\n  const amount = toNum(r['مبلغ']);\n  expenseByCategory[c] = (expenseByCategory[c] || 0) + amount;\n  otherExpenses += amount;\n});\n\nconst totalExpenses = otherExpenses + payrollTotal;\nconst profit = totalIncome - totalExpenses;\nconst margin = totalIncome > 0 ? Math.round(profit / totalIncome * 1000) / 10 : 0;\nlet capitalIn = 0;\ncapital.forEach(function (r) { capitalIn += toNum(r['مبلغ_تومان']); });\n\nconst summary = {\n  'شناسه_دوره': period.periodId,\n  'سال_شمسی': JY,\n  'ماه_شمسی': JM,\n  'نام_ماه': period.monthName,\n  'درآمد_شهریه': tuition,\n  'درآمد_همکاری': partner,\n  'درآمد_سایر': other,\n  'جمع_درآمد': totalIncome,\n  'حقوق_مدرسین': payrollTotal,\n  'سایر_هزینه‌ها': otherExpenses,\n  'جمع_هزینه': totalExpenses,\n  'سود_عملیاتی': profit,\n  'حاشیه_سود_درصد': margin,\n  'آورده_سرمایه_گذار': capitalIn,\n  'جریان_نقد_خالص': profit + capitalIn,\n  'تعداد_جلسات': totalSessions,\n  'تعداد_فراگیر': totalStudents,\n  'تاریخ_تولید': now,\n};\n\nreturn [{\n  json: {\n    period: period,\n    schoolName: schoolName,\n    reportEmail: reportEmail,\n    taxPct: taxPct,\n    insPct: insPct,\n    payroll: payroll,\n    summary: summary,\n    expenseByCategory: expenseByCategory,\n  },\n}];\n"
+      },
+      "id": "169234cb-42c4-4250-9648-54d78b091edb",
+      "name": "محاسبه حقوق و سود ماه",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payroll = $input.first().json.payroll || [];\nreturn payroll.map(function (p) { return { json: p }; });"
+      },
+      "id": "283637db-a99f-4162-a29f-2a065e03be22",
+      "name": "تفکیک ردیف‌های حقوق",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2059312419",
+          "cachedResultName": "حقوق_مدرسین"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "شناسه_دوره"
+          ],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": true,
+              "display": true,
+              "displayName": "شناسه_دوره",
+              "id": "شناسه_دوره",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "سال_شمسی",
+              "id": "سال_شمسی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "ماه_شمسی",
+              "id": "ماه_شمسی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "کد_مدرس",
+              "id": "کد_مدرس",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "نام_مدرس",
+              "id": "نام_مدرس",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "ایمیل",
+              "id": "ایمیل",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "جلسات_حضوری",
+              "id": "جلسات_حضوری",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "جلسات_آنلاین",
+              "id": "جلسات_آنلاین",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "درآمد_منتسب_حضوری",
+              "id": "درآمد_منتسب_حضوری",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "درآمد_منتسب_آنلاین",
+              "id": "درآمد_منتسب_آنلاین",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "درصد_حضوری",
+              "id": "درصد_حضوری",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "درصد_آنلاین",
+              "id": "درصد_آنلاین",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "حقوق_درصدی",
+              "id": "حقوق_درصدی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "حقوق_ثابت",
+              "id": "حقوق_ثابت",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "کسورات",
+              "id": "کسورات",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "خالص_پرداختی",
+              "id": "خالص_پرداختی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "شماره_شبا",
+              "id": "شماره_شبا",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "وضعیت_پرداخت",
+              "id": "وضعیت_پرداخت",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "تاریخ_محاسبه",
+              "id": "تاریخ_محاسبه",
+              "required": false,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "8967a1d8-7d0a-4726-81c4-8a4d419fb5ec",
+      "name": "ثبت حقوق مدرسین",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        -224
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $input.first().json;\nconst s = d.summary;\nconst p = d.period;\nconst payroll = d.payroll || [];\nconst SHEET_URL = 'https://docs.google.com/spreadsheets/d/12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4/edit';\n\nfunction money(n) {\n  const v = Math.round(Number(n) || 0);\n  return v.toLocaleString('en-US');\n}\n\nconst rowsHtml = payroll.map(function (r) {\n  return '<tr>'\n    + '<td>' + (r['نام_مدرس'] || r['کد_مدرس']) + '</td>'\n    + '<td style=\"text-align:center\">' + r['جلسات_حضوری'] + '</td>'\n    + '<td style=\"text-align:center\">' + r['جلسات_آنلاین'] + '</td>'\n    + '<td>' + money(r['حقوق_درصدی']) + '</td>'\n    + '<td>' + money(r['حقوق_ثابت']) + '</td>'\n    + '<td>' + money(r['کسورات']) + '</td>'\n    + '<td><b>' + money(r['خالص_پرداختی']) + '</b></td>'\n    + '</tr>';\n}).join('');\n\nconst cat = d.expenseByCategory || {};\nconst catKeys = Object.keys(cat).sort(function (a, b) { return cat[b] - cat[a]; });\nconst catHtml = catKeys.map(function (k) {\n  return '<tr><td>' + k + '</td><td>' + money(cat[k]) + '</td></tr>';\n}).join('');\n\nconst profitColor = s['سود_عملیاتی'] >= 0 ? '#137333' : '#c5221f';\nconst profitLabel = s['سود_عملیاتی'] >= 0 ? 'سود' : 'زیان';\n\nconst html = '<div dir=\"rtl\" style=\"font-family:Tahoma,Arial,sans-serif;font-size:14px;color:#202124;max-width:760px\">'\n  + '<h2 style=\"margin:0 0 4px\">گزارش مالی ' + p.monthLabel + '</h2>'\n  + '<div style=\"color:#5f6368;margin-bottom:16px\">' + d.schoolName + ' — همه مبالغ به تومان</div>'\n  + '<table style=\"border-collapse:collapse;width:100%;margin-bottom:20px\">'\n  + '<tr>'\n  + '<td style=\"background:#e8f0fe;padding:14px;border-radius:8px\"><div style=\"color:#5f6368;font-size:12px\">جمع درآمد</div><div style=\"font-size:20px;font-weight:bold\">' + money(s['جمع_درآمد']) + '</div></td>'\n  + '<td style=\"width:8px\"></td>'\n  + '<td style=\"background:#fce8e6;padding:14px;border-radius:8px\"><div style=\"color:#5f6368;font-size:12px\">جمع هزینه</div><div style=\"font-size:20px;font-weight:bold\">' + money(s['جمع_هزینه']) + '</div></td>'\n  + '<td style=\"width:8px\"></td>'\n  + '<td style=\"background:#e6f4ea;padding:14px;border-radius:8px\"><div style=\"color:#5f6368;font-size:12px\">' + profitLabel + ' عملیاتی</div><div style=\"font-size:20px;font-weight:bold;color:' + profitColor + '\">' + money(s['سود_عملیاتی']) + '</div><div style=\"color:#5f6368;font-size:12px\">حاشیه ' + s['حاشیه_سود_درصد'] + '٪</div></td>'\n  + '</tr></table>'\n  + '<h3 style=\"margin:18px 0 6px\">درآمدها</h3>'\n  + '<table border=\"1\" cellpadding=\"7\" style=\"border-collapse:collapse;border-color:#dadce0;width:100%\">'\n  + '<tr style=\"background:#f1f3f4\"><th align=\"right\">منبع</th><th align=\"right\">مبلغ</th></tr>'\n  + '<tr><td>شهریه فراگیران</td><td>' + money(s['درآمد_شهریه']) + '</td></tr>'\n  + '<tr><td>مجموعه‌های همکار</td><td>' + money(s['درآمد_همکاری']) + '</td></tr>'\n  + '<tr><td>سایر</td><td>' + money(s['درآمد_سایر']) + '</td></tr>'\n  + '<tr style=\"background:#f8f9fa\"><td><b>جمع</b></td><td><b>' + money(s['جمع_درآمد']) + '</b></td></tr>'\n  + '</table>'\n  + '<h3 style=\"margin:18px 0 6px\">هزینه‌ها</h3>'\n  + '<table border=\"1\" cellpadding=\"7\" style=\"border-collapse:collapse;border-color:#dadce0;width:100%\">'\n  + '<tr style=\"background:#f1f3f4\"><th align=\"right\">دسته</th><th align=\"right\">مبلغ</th></tr>'\n  + '<tr><td><b>حقوق مدرسین</b></td><td><b>' + money(s['حقوق_مدرسین']) + '</b></td></tr>'\n  + catHtml\n  + '<tr style=\"background:#f8f9fa\"><td><b>جمع</b></td><td><b>' + money(s['جمع_هزینه']) + '</b></td></tr>'\n  + '</table>'\n  + '<h3 style=\"margin:18px 0 6px\">حقوق مدرسین (' + payroll.length + ' نفر)</h3>'\n  + (payroll.length\n      ? '<table border=\"1\" cellpadding=\"7\" style=\"border-collapse:collapse;border-color:#dadce0;width:100%\">'\n        + '<tr style=\"background:#f1f3f4\"><th align=\"right\">مدرس</th><th>جلسه حضوری</th><th>جلسه آنلاین</th><th align=\"right\">درصدی</th><th align=\"right\">ثابت</th><th align=\"right\">کسورات</th><th align=\"right\">خالص</th></tr>'\n        + rowsHtml\n        + '<tr style=\"background:#f8f9fa\"><td colspan=\"6\"><b>جمع پرداختی</b></td><td><b>' + money(s['حقوق_مدرسین']) + '</b></td></tr>'\n        + '</table>'\n      : '<div style=\"color:#5f6368\">این ماه جلسه تدریسی ثبت نشده است.</div>')\n  + '<h3 style=\"margin:18px 0 6px\">سرمایه و نقدینگی</h3>'\n  + '<table border=\"1\" cellpadding=\"7\" style=\"border-collapse:collapse;border-color:#dadce0;width:100%\">'\n  + '<tr><td>آورده سرمایه‌گذاران این ماه</td><td>' + money(s['آورده_سرمایه_گذار']) + '</td></tr>'\n  + '<tr><td>جریان نقد خالص (سود + آورده)</td><td><b>' + money(s['جریان_نقد_خالص']) + '</b></td></tr>'\n  + '</table>'\n  + '<div style=\"margin-top:10px;color:#5f6368;font-size:12px\">آورده سرمایه‌گذار درآمد محسوب نمی‌شود و در سود عملیاتی نیامده است.</div>'\n  + '<div style=\"margin:16px 0\"><span style=\"color:#5f6368\">تعداد جلسات ماه: </span><b>' + s['تعداد_جلسات'] + '</b>'\n  + ' &nbsp;|&nbsp; <span style=\"color:#5f6368\">مجموع حضور فراگیر: </span><b>' + s['تعداد_فراگیر'] + '</b></div>'\n  + '<p><a href=\"' + SHEET_URL + '\" style=\"background:#1a73e8;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;display:inline-block\">باز کردن دفتر حسابداری</a></p>'\n  + '<div style=\"color:#9aa0a6;font-size:11px;margin-top:18px\">این گزارش خودکار در پایان ' + p.monthLabel + ' تولید شده است.</div>'\n  + '</div>';\n\nreturn [{\n  json: {\n    summaryRow: s,\n    reportEmail: d.reportEmail,\n    subject: 'گزارش مالی ' + p.monthLabel + ' — ' + d.schoolName,\n    html: html,\n    fileName: 'hoghoogh-' + p.periodId + '.xlsx',\n    payrollCount: payroll.length,\n  },\n}];"
+      },
+      "id": "d1001156-edb7-450e-8f7d-df0652c75c86",
+      "name": "ساخت خلاصه ماه",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4",
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1181014727",
+          "cachedResultName": "گزارش_ماهانه"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "شناسه_دوره"
+          ],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": true,
+              "display": true,
+              "displayName": "شناسه_دوره",
+              "id": "شناسه_دوره",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "سال_شمسی",
+              "id": "سال_شمسی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "ماه_شمسی",
+              "id": "ماه_شمسی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "نام_ماه",
+              "id": "نام_ماه",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "درآمد_شهریه",
+              "id": "درآمد_شهریه",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "درآمد_همکاری",
+              "id": "درآمد_همکاری",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "درآمد_سایر",
+              "id": "درآمد_سایر",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "جمع_درآمد",
+              "id": "جمع_درآمد",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "حقوق_مدرسین",
+              "id": "حقوق_مدرسین",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "سایر_هزینه‌ها",
+              "id": "سایر_هزینه‌ها",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "جمع_هزینه",
+              "id": "جمع_هزینه",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "سود_عملیاتی",
+              "id": "سود_عملیاتی",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "حاشیه_سود_درصد",
+              "id": "حاشیه_سود_درصد",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "آورده_سرمایه_گذار",
+              "id": "آورده_سرمایه_گذار",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "جریان_نقد_خالص",
+              "id": "جریان_نقد_خالص",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "تعداد_جلسات",
+              "id": "تعداد_جلسات",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "تعداد_فراگیر",
+              "id": "تعداد_فراگیر",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "تاریخ_تولید",
+              "id": "تاریخ_تولید",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "آورده_سرمایه_گذار": "={{ $json.summaryRow[\"آورده_سرمایه_گذار\"] }}",
+            "تاریخ_تولید": "={{ $json.summaryRow[\"تاریخ_تولید\"] }}",
+            "تعداد_جلسات": "={{ $json.summaryRow[\"تعداد_جلسات\"] }}",
+            "تعداد_فراگیر": "={{ $json.summaryRow[\"تعداد_فراگیر\"] }}",
+            "جریان_نقد_خالص": "={{ $json.summaryRow[\"جریان_نقد_خالص\"] }}",
+            "جمع_درآمد": "={{ $json.summaryRow[\"جمع_درآمد\"] }}",
+            "جمع_هزینه": "={{ $json.summaryRow[\"جمع_هزینه\"] }}",
+            "حاشیه_سود_درصد": "={{ $json.summaryRow[\"حاشیه_سود_درصد\"] }}",
+            "حقوق_مدرسین": "={{ $json.summaryRow[\"حقوق_مدرسین\"] }}",
+            "درآمد_سایر": "={{ $json.summaryRow[\"درآمد_سایر\"] }}",
+            "درآمد_شهریه": "={{ $json.summaryRow[\"درآمد_شهریه\"] }}",
+            "درآمد_همکاری": "={{ $json.summaryRow[\"درآمد_همکاری\"] }}",
+            "سال_شمسی": "={{ $json.summaryRow[\"سال_شمسی\"] }}",
+            "سایر_هزینه‌ها": "={{ $json.summaryRow[\"سایر_هزینه‌ها\"] }}",
+            "سود_عملیاتی": "={{ $json.summaryRow[\"سود_عملیاتی\"] }}",
+            "شناسه_دوره": "={{ $json.summaryRow[\"شناسه_دوره\"] }}",
+            "ماه_شمسی": "={{ $json.summaryRow[\"ماه_شمسی\"] }}",
+            "نام_ماه": "={{ $json.summaryRow[\"نام_ماه\"] }}"
+          }
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "0c5b66f2-8e2f-4411-9f7b-8d50ae60f215",
+      "name": "ثبت گزارش ماهانه",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        224
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const payroll = $('محاسبه حقوق و سود ماه').first().json.payroll || [];\nconst s = $('محاسبه حقوق و سود ماه').first().json.summary;\nif (!payroll.length) {\n  return [{ json: { 'پیام': 'در این ماه هیچ جلسه تدریسی ثبت نشده است', 'دوره': s['شناسه_دوره'] } }];\n}\nreturn payroll.map(function (p) {\n  return {\n    json: {\n      'دوره': p['شناسه_دوره'],\n      'کد مدرس': p['کد_مدرس'],\n      'نام مدرس': p['نام_مدرس'],\n      'جلسات حضوری': p['جلسات_حضوری'],\n      'جلسات آنلاین': p['جلسات_آنلاین'],\n      'درآمد حضوری': p['درآمد_منتسب_حضوری'],\n      'درآمد آنلاین': p['درآمد_منتسب_آنلاین'],\n      'درصد حضوری': p['درصد_حضوری'],\n      'درصد آنلاین': p['درصد_آنلاین'],\n      'حقوق درصدی': p['حقوق_درصدی'],\n      'حقوق ثابت': p['حقوق_ثابت'],\n      'کسورات': p['کسورات'],\n      'خالص پرداختی': p['خالص_پرداختی'],\n      'شماره شبا': p['شماره_شبا'],\n    },\n  };\n});"
+      },
+      "id": "35250211-056c-416e-8867-09ee458a4f18",
+      "name": "ردیف‌های پیوست اکسل",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "fileName": "={{ $(\"ساخت خلاصه ماه\").first().json.fileName }}",
+          "headerRow": true,
+          "sheetName": "حقوق"
+        }
+      },
+      "id": "b5e5c01a-fdce-4ad0-89ae-6e5c61f0e4ed",
+      "name": "فایل اکسل حقوق",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $(\"ساخت خلاصه ماه\").first().json.reportEmail }}",
+        "subject": "={{ $(\"ساخت خلاصه ماه\").first().json.subject }}",
+        "message": "={{ $(\"ساخت خلاصه ماه\").first().json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          },
+          "senderName": "حسابداری آموزشگاه فردا"
+        }
+      },
+      "id": "7ce6b93d-9055-418d-b05b-eec2d22263da",
+      "name": "ارسال گزارش ماهانه",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1680,
+        224
+      ],
+      "webhookId": "c4025d29-7fe9-40ab-b624-731ef4f32151",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cKUvZh7X6OAAQkpq",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## چه زمانی اجرا می‌شود؟\n\n**خودکار:** هر شب ساعت ۲۳:۳۰ اجرا می‌شود ولی فقط در **آخرین روز ماه شمسی** ادامه می‌دهد (اسفند ۲۹ یا ۳۰ روزه هم درست تشخیص داده می‌شود).\n\n**دستی:** با دکمه Execute هر وقت خواستید. اگر در ۵ روز اول ماه باشید، **ماه قبل** بسته می‌شود؛ در غیر این صورت ماه جاری.\n\nاجرای دوباره خطر ندارد: ردیف‌ها با کلید «شناسه_دوره» به‌روزرسانی می‌شوند نه تکراری.",
+        "height": 300,
+        "width": 700,
+        "color": 4
+      },
+      "id": "56ff3795-99df-4649-b13b-a9077edd263b",
+      "name": "Sticky Note 7aea00d5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## حقوق از روی واریزی‌های وصول‌شده\n\nحقوق هر مدرس = جمع ستون `سهم_مدرس` روی واریزی‌های همان ماه در شیت **درآمد**.\n\nیعنی فقط پولی که **واقعاً وصول شده** مبنای حقوق است. درصد هر واریزی در لحظهٔ ثبت قفل شده، پس تغییر بعدی درصد روی ماه‌های گذشته اثر ندارد.\n\nشیت **برنامه_کلاس‌ها** فقط تعداد جلسات و شاگردان را برای گزارش می‌دهد — در پول دخالتی ندارد. کلاس لغو‌شده شمرده نمی‌شود.\n\nمدرس با قرارداد «ثابت» یا «ترکیبی»، حقوق ثابتش هم اضافه می‌شود. کسورات = مالیات + بیمه از شیت تنظیمات.\n\nاگر مدرسی در شیت «مدرسین» نباشد ولی سهمش ثبت شده باشد، باز هم در فهرست حقوق می‌آید — پول کسی گم نمی‌شود.",
+        "height": 260,
+        "width": 660,
+        "color": 3
+      },
+      "id": "bbfa5b9e-237c-4584-9509-400b3c7c6ef1",
+      "name": "Sticky Note ca3f839b",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## گزارش ایمیلی\n\nایمیل HTML راست‌چین شامل: کارت‌های درآمد/هزینه/سود، تفکیک درآمد، تفکیک هزینه به دسته، جدول حقوق هر مدرس، و آورده سرمایه‌گذاران.\n\nپیوست: فایل اکسل فیش‌های حقوقی همان ماه.\n\nآدرس گیرنده از شیت «تنظیمات» → کلید `ایمیل_گزارش` خوانده می‌شود.",
+        "height": 240,
+        "width": 1100,
+        "color": 6
+      },
+      "id": "f6f472da-50e5-4c14-84c2-f1d87413161f",
+      "name": "Sticky Note cbe7ca90",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        752,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "cachedResultName": "حسابداری آموزشگاه علمی فردا",
+          "mode": "id",
+          "value": "12j12zy8lqxlft1mBIZ0THmG-Ro24TZmUqijVwMpuTg4"
+        },
+        "sheetName": {
+          "__rl": true,
+          "cachedResultName": "کلاس‌ها",
+          "mode": "list",
+          "value": "337802420"
+        },
+        "options": {}
+      },
+      "id": "53ab3a19-c53f-4627-a8c2-cf6afabab9b2",
+      "name": "کلاس‌ها",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -336,
+        160
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3SQAvMC4NM0Q506Y",
+          "name": "Google Sheets account 5"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "بررسی روزانه ساعت ۲۳:۳۰": {
+      "main": [
+        [
+          {
+            "node": "تعیین دوره",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تعیین دوره": {
+      "main": [
+        [
+          {
+            "node": "آیا ماه تمام شده؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "اجرای دستی بستن ماه": {
+      "main": [
+        [
+          {
+            "node": "تعیین دوره",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "آیا ماه تمام شده؟": {
+      "main": [
+        [
+          {
+            "node": "تنظیمات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تنظیمات": {
+      "main": [
+        [
+          {
+            "node": "مدرسین",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "درآمد": {
+      "main": [
+        [
+          {
+            "node": "هزینه‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "هزینه‌ها": {
+      "main": [
+        [
+          {
+            "node": "آورده سرمایه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "آورده سرمایه": {
+      "main": [
+        [
+          {
+            "node": "محاسبه حقوق و سود ماه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "محاسبه حقوق و سود ماه": {
+      "main": [
+        [
+          {
+            "node": "تفکیک ردیف‌های حقوق",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ساخت خلاصه ماه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تفکیک ردیف‌های حقوق": {
+      "main": [
+        [
+          {
+            "node": "ثبت حقوق مدرسین",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ساخت خلاصه ماه": {
+      "main": [
+        [
+          {
+            "node": "ثبت گزارش ماهانه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ثبت گزارش ماهانه": {
+      "main": [
+        [
+          {
+            "node": "ردیف‌های پیوست اکسل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ردیف‌های پیوست اکسل": {
+      "main": [
+        [
+          {
+            "node": "فایل اکسل حقوق",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "فایل اکسل حقوق": {
+      "main": [
+        [
+          {
+            "node": "ارسال گزارش ماهانه",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "برنامه کلاس‌ها": {
+      "main": [
+        [
+          {
+            "node": "درآمد",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "مدرسین": {
+      "main": [
+        [
+          {
+            "node": "کلاس‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "کلاس‌ها": {
+      "main": [
+        [
+          {
+            "node": "برنامه کلاس‌ها",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Asia/Tehran",
+    "saveDataErrorExecution": "all",
+    "binaryMode": "separate"
+  }
+}
