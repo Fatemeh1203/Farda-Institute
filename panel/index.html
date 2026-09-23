@@ -79,6 +79,14 @@ footer{text-align:center;color:var(--ink3);font-size:12px;padding:30px 0 40px}
 
 var enc=new TextEncoder(), dec=new TextDecoder();
 var VAULT=null, SESSION=null;
+var CURRENT=null;
+var HOST='https://n8n.aifardainstitute.ir';
+var OLD_HOSTS=['https://arezoo000.app.n8n.cloud'];
+function migrate(data){
+  var t=JSON.stringify(data);
+  for(var i=0;i<OLD_HOSTS.length;i++) t=t.split(OLD_HOSTS[i]).join(HOST);
+  return JSON.parse(t);
+}
 var REPO_EDIT='https://github.com/Fatemeh1203/Farda-Institute/edit/main/panel/vault.json';
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function unb64(str){var s=atob(str),b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
@@ -175,7 +183,7 @@ function wireRekey(data){
     var st=strength(a);
     if(!st.ok){rmsg.className='msg bad';rmsg.textContent='این رمز ضعیف است ('+st.verdict+' '+st.detail+'). بلندترش کنید.';return;}
     seal.disabled=true; rmsg.className='msg'; rmsg.textContent='در حال مهر کردن…';
-    sealVault(a,data).then(function(v){
+    sealVault(a,CURRENT).then(function(v){
       var txt=JSON.stringify(v);
       rmsg.className='msg good'; rmsg.textContent='مهر شد.';
       rout.innerHTML='<pre><code id="blob"></code></pre>'
@@ -210,24 +218,61 @@ function renderGate(err){
   function submit(){
     var v=pw.value; if(!v)return;
     gmsg.className='msg'; gmsg.textContent='در حال باز کردن…'; go.disabled=true;
-    openVault(v,VAULT).then(function(data){ SESSION=v; renderSections(data); },function(){ go.disabled=false; gmsg.className='msg bad'; gmsg.textContent='رمز درست نیست.'; });
+    openVault(v,VAULT).then(function(data){ SESSION=v; renderSections(migrate(data)); },function(){ go.disabled=false; gmsg.className='msg bad'; gmsg.textContent='رمز درست نیست.'; });
   }
   go.addEventListener('click',submit);
   pw.addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
   pw.focus();
 }
-function renderSections(data){
-  var body=''; var all=(data.open||[]).concat(data.secret||[]);
-  for(var i=0;i<all.length;i++)body+=sectionHtml(all[i]);
-  root.innerHTML=mast()+'<div class="wrap">'+body+rekeyHtml()
-    +'<footer>آموزشگاه علمی فردا — منطقهٔ زمانی تهران، همه مبالغ به تومان · این صفحه قفل است و فقط با رمز شما باز می‌شود</footer></div>';
-  wireRekey(data);
-  var copies=root.querySelectorAll('.copy');
+function wireCopies(scope){
+  var copies=scope.querySelectorAll('.copy');
   for(var c=0;c<copies.length;c++){copies[c].addEventListener('click',function(e){
     var b=e.currentTarget, text=b.getAttribute('data-copy');
+    if(!text)return;
     function done(){var old=b.textContent;b.textContent='کپی شد';b.setAttribute('data-done','1');setTimeout(function(){b.textContent=old;b.removeAttribute('data-done');},1500);}
     try{navigator.clipboard.writeText(text).then(done,done);}catch(err){try{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();}catch(e2){}}
   });}
+}
+function paintLinks(data){
+  var body=''; var all=(data.open||[]).concat(data.secret||[]);
+  for(var i=0;i<all.length;i++)body+=sectionHtml(all[i]);
+  var box=document.getElementById('links');
+  box.innerHTML=body;
+  wireCopies(box);
+}
+function editHtml(){
+  return '<section><div class="shead"><h2>ویرایش لینک‌ها</h2><span class="srule"></span></div>'
+    +'<div class="rekey">'
+    +'<h3>یک تکه از لینک‌ها را با تکهٔ دیگر عوض کنید</h3>'
+    +'<p class="k">مثلاً وقتی مسیر یک فرم عوض شد: مسیر قدیمی را در خانهٔ اول و مسیر تازه را در خانهٔ دوم بنویسید. تغییر فقط وقتی ماندگار می‌شود که بعدش در بخش پایین <b>مهر کن</b> را بزنید و فایل را در گیت‌هاب عوض کنید.</p>'
+    +'<label for="f1">این را پیدا کن</label><input id="f1" type="text" autocomplete="off" spellcheck="false">'
+    +'<label for="f2">با این عوض کن</label><input id="f2" type="text" autocomplete="off" spellcheck="false">'
+    +'<button class="btn" id="rep">جایگزین کن</button>'
+    +'<div class="msg" id="fmsg"></div>'
+    +'</div></section>';
+}
+function wireEdit(){
+  var f1=document.getElementById('f1'), f2=document.getElementById('f2'), fmsg=document.getElementById('fmsg');
+  document.getElementById('rep').addEventListener('click',function(){
+    var a=f1.value.trim(), b=f2.value.trim();
+    if(!a){fmsg.className='msg bad';fmsg.textContent='خانهٔ اول خالی است.';return;}
+    var t=JSON.stringify(CURRENT);
+    var n=t.split(a).length-1;
+    if(!n){fmsg.className='msg bad';fmsg.textContent='«'+a+'» در هیچ لینکی پیدا نشد.';return;}
+    CURRENT=JSON.parse(t.split(a).join(b));
+    paintLinks(CURRENT);
+    fmsg.className='msg good';
+    fmsg.textContent=n+' جا عوض شد. برای ماندگاری، پایین صفحه رمز بگذارید و مهر کنید.';
+    f1.value='';f2.value='';
+  });
+}
+function renderSections(data){
+  CURRENT=data;
+  root.innerHTML=mast()+'<div class="wrap"><div id="links"></div>'+editHtml()+rekeyHtml()
+    +'<footer>آموزشگاه علمی فردا — منطقهٔ زمانی تهران، همه مبالغ به تومان · این صفحه قفل است و فقط با رمز شما باز می‌شود</footer></div>';
+  paintLinks(data);
+  wireEdit();
+  wireRekey(data);
 }
 function boot(){
   root.innerHTML=mast()+'<div class="wrap"><div class="gate"><div class="lock">⏳</div><h2>در حال بارگذاری…</h2></div></div>';
