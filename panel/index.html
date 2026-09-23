@@ -54,19 +54,76 @@ code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:#
 .gate .btn:disabled{opacity:.5}
 .msg{margin-top:12px;font-size:13.5px;min-height:20px}
 .msg.bad{color:var(--stop)}.msg.good{color:var(--ok)}
+.rekey{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.rekey h3{margin:0 0 4px;font-size:16px;font-weight:800}
+.rekey p.k{color:var(--ink2);font-size:13px;margin:0 0 14px}
+.rekey p.k .mono{white-space:nowrap;word-break:normal}
+.rekey label{display:block;font-size:12.5px;color:var(--ink2);margin:10px 0 5px}
+.rekey input{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:9px;color:var(--ink);font:inherit;font-size:15px;padding:10px 12px;direction:ltr;text-align:left}
+.rekey .btn{background:var(--accent);color:#10131f;border:0;border-radius:9px;font:inherit;font-size:14px;font-weight:800;padding:10px 18px;margin-top:14px;cursor:pointer}
+.rekey .btn:disabled{opacity:.45;cursor:progress}
+.meter{margin-top:9px;font-size:12.5px;line-height:1.7}
+.mtrack{display:block;height:5px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:6px}
+.mfill{display:block;height:100%;width:0%;border-radius:99px;transition:width .2s,background .2s}
+.mverdict{font-weight:800}
+.steps{margin:14px 0 0;padding-inline-start:20px;color:var(--ink2);font-size:13px}
+.steps li{margin-bottom:6px}
+.steps b{color:var(--ink)}
+.ghost{display:inline-block;font-size:13px;font-weight:700;color:var(--accent);background:var(--accentSoft);border:1px solid var(--line);border-radius:9px;padding:9px 16px;margin-top:10px}
 footer{text-align:center;color:var(--ink3);font-size:12px;padding:30px 0 40px}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
-var VAULT = {"v":1,"salt":"0kwEdtXo3LL4CyxlPWASdA==","iv":"gM4LESYBlWKTwxKc","ct":"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"};
 
 var enc=new TextEncoder(), dec=new TextDecoder();
+var VAULT=null, SESSION=null;
+var REPO_EDIT='https://github.com/Fatemeh1203/Farda-Institute/edit/main/panel/vault.json';
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function unb64(str){var s=atob(str),b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
-function keyFrom(pw,salt){return crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']).then(function(km){return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:200000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);});}
-function open(pw,v){return keyFrom(pw,unb64(v.salt)).then(function(k){return crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(v.iv)},k,unb64(v.ct));}).then(function(p){return JSON.parse(dec.decode(p));});}
+function b64(buf){var b=new Uint8Array(buf),s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+function keyFrom(pw,salt,use){return crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']).then(function(km){return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:200000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,[use]);});}
+function openVault(pw,v){return keyFrom(pw,unb64(v.salt),'decrypt').then(function(k){return crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(v.iv)},k,unb64(v.ct));}).then(function(p){return JSON.parse(dec.decode(p));});}
+function sealVault(pw,obj){
+  var salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
+  return keyFrom(pw,salt,'encrypt').then(function(k){return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},k,enc.encode(JSON.stringify(obj)));})
+    .then(function(ct){return {v:1,salt:b64(salt),iv:b64(iv),ct:b64(ct)};});
+}
+
+/* ---- سنجهٔ قدرت رمز ---- */
+var WEAK=['password','123456','qwerty','iloveyou','admin','welcome','farda','renasc','ahmad','12345678'];
+function strength(pw){
+  if(!pw)return{pct:0,color:'var(--line)',verdict:'رمزی وارد نشده',detail:'',ok:false};
+  var pool=0;
+  if(/[a-z]/.test(pw))pool+=26;
+  if(/[A-Z]/.test(pw))pool+=26;
+  if(/[0-9]/.test(pw))pool+=10;
+  if(/[^a-zA-Z0-9\u0600-\u06FF]/.test(pw))pool+=33;
+  if(/[\u0600-\u06FF]/.test(pw))pool+=60;
+  var perChar=Math.log(pool||2)/Math.log(2);
+  /* کلمهٔ حدس‌زدنی تقریباً هیچ امتیازی ندارد، ولی بقیهٔ رمز امتیاز خودش را نگه می‌دارد */
+  var rest=pw.toLowerCase(), hits=0;
+  for(var i=0;i<WEAK.length;i++){
+    while(rest.indexOf(WEAK[i])>=0){rest=rest.replace(WEAK[i],'');hits++;}
+  }
+  var bits=rest.length*perChar+hits*3;
+  var secs=Math.pow(2,bits-1)/100000;   /* ~۱۰۰هزار حدس در ثانیه روی یک کارت گرافیک */
+  var h;
+  if(secs<60)h='کمتر از یک دقیقه';
+  else if(secs<3600)h='حدود '+Math.round(secs/60)+' دقیقه';
+  else if(secs<86400)h='حدود '+Math.round(secs/3600)+' ساعت';
+  else if(secs<2592000)h='حدود '+Math.round(secs/86400)+' روز';
+  else if(secs<31536000)h='حدود '+Math.round(secs/2592000)+' ماه';
+  else if(secs<31536000*1000)h='حدود '+Math.round(secs/31536000)+' سال';
+  else h='عملاً هرگز';
+  var v,c,ok=false;
+  if(bits<40){v='خیلی ضعیف';c='var(--stop)';}
+  else if(bits<55){v='هنوز ضعیف';c='var(--brass)';}
+  else if(bits<70){v='قابل قبول';c='var(--ok)';ok=true;}
+  else{v='محکم';c='var(--ok)';ok=true;}
+  return{pct:Math.max(4,Math.min(100,Math.round(bits/80*100))),color:c,verdict:v,detail:'— شکستنش '+h+' طول می‌کشد',ok:ok};
+}
 
 var root=document.getElementById('app');
 function mast(){
@@ -85,6 +142,65 @@ function sectionHtml(s){
   if(s.note)h+='<div class="note">'+s.note+'</div>';
   return h+'</section>';
 }
+function rekeyHtml(){
+  return '<section><div class="shead"><h2>عوض کردن رمز</h2><span class="srule"></span></div>'
+    +'<div class="rekey">'
+    +'<h3>رمز تازه بگذارید</h3>'
+    +'<p class="k">همه‌چیز همین‌جا در مرورگر خودتان انجام می‌شود. رمز تازه به هیچ سروری فرستاده نمی‌شود. آخرش یک متن کوتاه می‌گیرید که باید جای محتوای فایل <span class="mono">panel/vault.json</span> در مخزن بگذارید.</p>'
+    +'<label for="np1">رمز تازه</label><input id="np1" type="password" autocomplete="new-password">'
+    +'<div class="meter"><span class="mtrack"><span class="mfill" id="mfill"></span></span>'
+    +'<span class="mverdict" id="mverdict">رمزی وارد نشده</span> <span id="mdetail" style="color:var(--ink2)"></span></div>'
+    +'<label for="np2">یک بار دیگر</label><input id="np2" type="password" autocomplete="new-password">'
+    +'<button class="btn" id="seal">مهر کن</button>'
+    +'<div class="msg" id="rmsg"></div>'
+    +'<div id="rout"></div>'
+    +'</div></section>';
+}
+function wireRekey(data){
+  var np1=document.getElementById('np1'), np2=document.getElementById('np2');
+  var seal=document.getElementById('seal'), rmsg=document.getElementById('rmsg'), rout=document.getElementById('rout');
+  function paint(){
+    var st=strength(np1.value);
+    document.getElementById('mfill').style.width=st.pct+'%';
+    document.getElementById('mfill').style.background=st.color;
+    var v=document.getElementById('mverdict');
+    v.textContent=st.verdict; v.style.color=st.color;
+    document.getElementById('mdetail').textContent=st.detail;
+  }
+  np1.addEventListener('input',paint); paint();
+  seal.addEventListener('click',function(){
+    var a=np1.value, b=np2.value;
+    if(!a){rmsg.className='msg bad';rmsg.textContent='رمز تازه را وارد کنید.';return;}
+    if(a!==b){rmsg.className='msg bad';rmsg.textContent='دو رمز یکی نیستند.';return;}
+    var st=strength(a);
+    if(!st.ok){rmsg.className='msg bad';rmsg.textContent='این رمز ضعیف است ('+st.verdict+' '+st.detail+'). بلندترش کنید.';return;}
+    seal.disabled=true; rmsg.className='msg'; rmsg.textContent='در حال مهر کردن…';
+    sealVault(a,data).then(function(v){
+      var txt=JSON.stringify(v);
+      rmsg.className='msg good'; rmsg.textContent='مهر شد.';
+      rout.innerHTML='<pre><code id="blob"></code></pre>'
+        +'<button class="copy" id="cpblob">کپی کن</button> '
+        +'<a class="ghost" href="'+REPO_EDIT+'" target="_blank" rel="noopener">باز کردن فایل در گیت‌هاب</a>'
+        +'<ol class="steps">'
+        +'<li>دکمهٔ <b>کپی کن</b> را بزنید.</li>'
+        +'<li>روی <b>باز کردن فایل در گیت‌هاب</b> بزنید — ویرایشگر همان فایل باز می‌شود.</li>'
+        +'<li>هرچه داخلش هست پاک کنید و متن کپی‌شده را بچسبانید.</li>'
+        +'<li>پایین صفحه <b>Commit changes</b> را بزنید.</li>'
+        +'<li>چند دقیقه صبر کنید، بعد همین پنل را با رمز تازه باز کنید.</li>'
+        +'</ol>';
+      document.getElementById('blob').textContent=txt;
+      document.getElementById('cpblob').addEventListener('click',function(e){
+        var btn=e.currentTarget;
+        function done(){btn.textContent='کپی شد';btn.setAttribute('data-done','1');}
+        try{navigator.clipboard.writeText(txt).then(done,done);}catch(err){done();}
+      });
+      seal.disabled=false; np1.value=''; np2.value=''; paint();
+    },function(err){
+      seal.disabled=false; rmsg.className='msg bad';
+      rmsg.textContent='مهر نشد: '+((err&&err.message)||err);
+    });
+  });
+}
 function renderGate(err){
   root.innerHTML=mast()+'<div class="wrap"><div class="gate"><div class="lock">🔒</div><h2>قفل است</h2>'
     +'<p>لینک‌های مدیریتی با رمز شما رمزگذاری شده‌اند و بدون رمز اصلاً قابل بازیابی نیستند.</p>'
@@ -94,7 +210,7 @@ function renderGate(err){
   function submit(){
     var v=pw.value; if(!v)return;
     gmsg.className='msg'; gmsg.textContent='در حال باز کردن…'; go.disabled=true;
-    open(v,VAULT).then(function(data){ renderSections(data); },function(){ go.disabled=false; gmsg.className='msg bad'; gmsg.textContent='رمز درست نیست.'; });
+    openVault(v,VAULT).then(function(data){ SESSION=v; renderSections(data); },function(){ go.disabled=false; gmsg.className='msg bad'; gmsg.textContent='رمز درست نیست.'; });
   }
   go.addEventListener('click',submit);
   pw.addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
@@ -103,7 +219,9 @@ function renderGate(err){
 function renderSections(data){
   var body=''; var all=(data.open||[]).concat(data.secret||[]);
   for(var i=0;i<all.length;i++)body+=sectionHtml(all[i]);
-  root.innerHTML=mast()+'<div class="wrap">'+body+'<footer>آموزشگاه علمی فردا — منطقهٔ زمانی تهران، همه مبالغ به تومان · این صفحه قفل است و فقط با رمز شما باز می‌شود</footer></div>';
+  root.innerHTML=mast()+'<div class="wrap">'+body+rekeyHtml()
+    +'<footer>آموزشگاه علمی فردا — منطقهٔ زمانی تهران، همه مبالغ به تومان · این صفحه قفل است و فقط با رمز شما باز می‌شود</footer></div>';
+  wireRekey(data);
   var copies=root.querySelectorAll('.copy');
   for(var c=0;c<copies.length;c++){copies[c].addEventListener('click',function(e){
     var b=e.currentTarget, text=b.getAttribute('data-copy');
@@ -111,7 +229,19 @@ function renderSections(data){
     try{navigator.clipboard.writeText(text).then(done,done);}catch(err){try{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();}catch(e2){}}
   });}
 }
-renderGate();
+function boot(){
+  root.innerHTML=mast()+'<div class="wrap"><div class="gate"><div class="lock">⏳</div><h2>در حال بارگذاری…</h2></div></div>';
+  fetch('vault.json?v='+Date.now(),{cache:'no-store'}).then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(function(v){ VAULT=v; renderGate(); },function(e){
+    root.innerHTML=mast()+'<div class="wrap"><div class="gate"><div class="lock">⚠️</div>'
+      +'<h2>محتوای قفل خوانده نشد</h2>'
+      +'<p>فایل <span class="mono">panel/vault.json</span> پیدا نشد یا خراب است.</p>'
+      +'<div class="msg bad">'+esc(e.message||e)+'</div></div></div>';
+  });
+}
+boot();
 </script>
 </body>
 </html>
