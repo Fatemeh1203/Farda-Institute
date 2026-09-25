@@ -59,7 +59,9 @@ code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:#
 .rekey p.k{color:var(--ink2);font-size:13px;margin:0 0 14px}
 .rekey p.k .mono{white-space:nowrap;word-break:normal}
 .rekey label{display:block;font-size:12.5px;color:var(--ink2);margin:10px 0 5px}
-.rekey input{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:9px;color:var(--ink);font:inherit;font-size:15px;padding:10px 12px;direction:ltr;text-align:left}
+.rekey input,.rekey select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:9px;color:var(--ink);font:inherit;font-size:15px;padding:10px 12px;direction:ltr;text-align:left}
+.rekey select,#a1,#a2,#a5{direction:rtl;text-align:right}
+#a5{margin-top:8px}
 .rekey .btn{background:var(--accent);color:#10131f;border:0;border-radius:9px;font:inherit;font-size:14px;font-weight:800;padding:10px 18px;margin-top:14px;cursor:pointer}
 .rekey .btn:disabled{opacity:.45;cursor:progress}
 .meter{margin-top:9px;font-size:12.5px;line-height:1.7}
@@ -266,11 +268,56 @@ function wireEdit(){
     f1.value='';f2.value='';
   });
 }
+function addHtml(){
+  return '<section><div class="shead"><h2>افزودن لینک</h2><span class="srule"></span></div>'
+    +'<div class="rekey">'
+    +'<h3>یک لینک تازه به این صفحه اضافه کنید</h3>'
+    +'<p class="k">نشانی لینک فقط داخل همین قفل نگه داشته می‌شود و در گیت‌هاب دیده نمی‌شود. بعد از افزودن، پایین صفحه <b>مهر کن</b> را بزنید و فایل را در گیت‌هاب عوض کنید.</p>'
+    +'<label for="a1">اسم لینک</label><input id="a1" type="text" autocomplete="off" placeholder="مثلاً بستن حقوق ماه">'
+    +'<label for="a2">یک خط توضیح (اختیاری)</label><input id="a2" type="text" autocomplete="off">'
+    +'<label for="a3">نشانی</label><input id="a3" type="url" dir="ltr" autocomplete="off" spellcheck="false" placeholder="https://...">'
+    +'<label for="a4">در کدام بخش؟</label><select id="a4"></select>'
+    +'<input id="a5" type="text" autocomplete="off" placeholder="نام بخش تازه" hidden>'
+    +'<button class="btn" id="addl">اضافه کن</button>'
+    +'<div class="msg" id="amsg"></div>'
+    +'</div></section>';
+}
+function fillSections(){
+  var sel=document.getElementById('a4'), h='';
+  ['open','secret'].forEach(function(g){(CURRENT[g]||[]).forEach(function(s,i){h+='<option value="'+g+':'+i+'">'+esc(s.h)+'</option>';});});
+  sel.innerHTML=h+'<option value="new">＋ بخش تازه…</option>';
+}
+function wireAdd(){
+  var a1=document.getElementById('a1'),a2=document.getElementById('a2'),a3=document.getElementById('a3'),a4=document.getElementById('a4'),a5=document.getElementById('a5'),amsg=document.getElementById('amsg');
+  fillSections();
+  a4.addEventListener('change',function(){a5.hidden=a4.value!=='new';});
+  document.getElementById('addl').addEventListener('click',function(){
+    var t=a1.value.trim(), d=a2.value.trim(), u=a3.value.trim();
+    if(!t){amsg.className='msg bad';amsg.textContent='اسم لینک را بنویسید.';return;}
+    if(!/^https:\/\/\S+$/.test(u)){amsg.className='msg bad';amsg.textContent='نشانی باید با https:// شروع شود و فاصله نداشته باشد.';return;}
+    var sec;
+    if(a4.value==='new'){
+      var name=a5.value.trim();
+      if(!name){amsg.className='msg bad';amsg.textContent='نام بخش تازه را بنویسید.';return;}
+      CURRENT.secret=CURRENT.secret||[];
+      sec={h:name,items:[]};CURRENT.secret.push(sec);
+    }else{
+      var k=a4.value.split(':');sec=CURRENT[k[0]][+k[1]];
+    }
+    sec.items=sec.items||[];
+    sec.items.push({t:t,d:d,u:u});
+    paintLinks(CURRENT);fillSections();
+    amsg.className='msg good';
+    amsg.textContent='«'+t+'» به بخش «'+sec.h+'» اضافه شد. برای ماندگاری، پایین صفحه رمز بگذارید و مهر کنید.';
+    a1.value='';a2.value='';a3.value='';a5.value='';a5.hidden=true;
+  });
+}
 function renderSections(data){
   CURRENT=data;
-  root.innerHTML=mast()+'<div class="wrap"><div id="links"></div>'+editHtml()+rekeyHtml()
+  root.innerHTML=mast()+'<div class="wrap"><div id="links"></div>'+addHtml()+editHtml()+rekeyHtml()
     +'<footer>آموزشگاه علمی فردا — منطقهٔ زمانی تهران، همه مبالغ به تومان · این صفحه قفل است و فقط با رمز شما باز می‌شود</footer></div>';
   paintLinks(data);
+  wireAdd();
   wireEdit();
   wireRekey(data);
 }
